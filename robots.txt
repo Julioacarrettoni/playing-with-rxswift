@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://julioacarrettoni.github.io/playing-with-rxswift/sitemap.xml
