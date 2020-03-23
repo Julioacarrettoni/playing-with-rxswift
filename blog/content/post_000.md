@@ -51,7 +51,7 @@ I'm not advocating for those technologies in particular over their alternatives.
 
 **You shouldn't treat the published code as production-ready nor it is written with best practices in mind, instead brevity and simplicity are prioritized to avoid distracting the reader from the main goal, have fun with RxSwift.**
 
-Every chapter has a companion folder on the repo that contains the code as at the beginning (the `before` folder) and as at the end on the chapter (yes, the `after` folder).
+Every episode has a companion folder on the repo that contains the code as at the beginning (the `before` folder) and as at the end on the episode (yes, the `after` folder).
 
 ||
 |-|
@@ -61,7 +61,10 @@ I'm shipping the source code so you can see it doesn't contain any magic (or goo
 
 This framework impersonates our fictitious company backend, this way we don't have to work with boring data or install fancy software to deal with the 4096 dependencies from the other fancy software used to run a different fancy software just to have some fun data to play with, plus it comes with some handy Mock functionality to control time for example.
 
-The framework comes with pre-recorded activity, exposes some "endpoints" and responds to it as a server would do, for simplicity first chapters contain a simpler version of it but more functionality is made available as chapters progress (if I ever publish them that is)
+The framework comes with pre-recorded activity, exposes some "endpoints" and responds to it as a server would do, for simplicity first episodes contain a simpler version of it but more functionality is made available as episodes progress (if I ever publish them that is)
+
+# Topics
+The main topic of the blog is RxSwift and trying to find ways to leverage it's power while trying not to paint ourselves into a corner. We will also cover some details on SwiftUI required to build the sample app. I also cover some topics in regards to Unit testing usually at the end of the episodes.
 
 Anyway thank you for reading all this impenetrable wall of text and I hope you enjoy the project, feel free to drop me a comment on twitter.
 
