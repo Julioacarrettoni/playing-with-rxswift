@@ -1,8 +1,10 @@
 import FakeService
 import SwiftUI
+import RxSwift
 
 struct ContentView: View {
     @State var globalState: GlobalState? = nil
+    let disposeBag = DisposeBag()
     
     var body: some View {
         MapView(globalState: self.globalState)
@@ -11,10 +13,12 @@ struct ContentView: View {
     }
     
     private func refreshData() {
-        Service.getSystemState() { globalState in
-            self.globalState = globalState
-            self.refreshData()
-        }
+        Service.getSystemState()
+            .subscribe(onSuccess: { globalState in
+                self.globalState = globalState
+                self.refreshData()
+            })
+            .disposed(by: self.disposeBag)
     }
 }
 

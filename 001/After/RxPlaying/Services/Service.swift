@@ -19,6 +19,10 @@ final class Service {
                 self?.refreshGlobalState()
             })
             .disposed(by: self.disposeBag)
+        
+        Single<Bool>.create { (<#@escaping Single<Bool>.SingleObserver#>) -> Disposable in
+            <#code#>
+        }
     }
     
     private func refreshGlobalState() {

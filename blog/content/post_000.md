@@ -9,18 +9,23 @@ Before diving into the problems and start throwing code at it, let me tell you a
 ||
 |-|
 # Goal
-Learn a more about [RxSwift](https://github.com/ReactiveX/RxSwift) by building a _different_ kind of sample app based on [Swift](https://developer.apple.com/swift/) and [SwiftUI](https://github.com/ReactiveX/RxSwift) using [Xcode](https://github.com/ReactiveX/RxSwift).
+Learn more about [RxSwift](https://github.com/ReactiveX/RxSwift) by building a _different_ kind of sample app based on [Swift](https://developer.apple.com/swift/) and [SwiftUI](https://developer.apple.com/xcode/swiftui/) using [Xcode](https://developer.apple.com/xcode/).
+Why [RxSwift](https://github.com/ReactiveX/RxSwift)?  
+The best answer for that is [here](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Why.md)
 
 ||
 |-|
 # Motivation
-I find myself learning about new things that can be achieved with RxSwift by reading other people's code, never by reading posts about how `map` or `flatMap` works.  
+I find myself learning about new things that can be achieved with RxSwift by reading other people's code, almost never by reading posts about how `map` or `flatMap` works.  
 Maybe I lack the imagination necessary to translate all those marble diagrams and fake static number generators nobody use into "_real world_" problems, maybe it just that's not the way I learn, or you know, maybe I haven't tried hard enough.
 
-Anyway I decided to start tinkering with RxSwift a little more, I googled and asked on twitter ([here](https://twitter.com/dev_jac/status/1230657972470075392)), I found the usual books, [RxSwift: Reactive Programming with Swift](https://store.raywenderlich.com/products/rxswift), talks like the ones at [Realm Academy](https://academy.realm.io/posts/learning-path-rxswift-from-start-to-finish/) and tutorials which usually cover individual aspects like operators and always using those damn marbles 🙄  
-After some time I decided the best was to create a dummy app and play with it, but what kind of app? Most of the apps one can build for tinkering are passive, meaning you find a free service that returns some fancy data, like [Open Weather Map](https://openweathermap.org/api), you fetch it and render it nicely, and that's it. What kind of "Reactive" stuff can be built around a bunch of GET HTTP calls?
+Anyway, I decided to start tinkering with RxSwift a little more, I googled and asked on twitter ([here](https://twitter.com/dev_jac/status/1230657972470075392)), I found the usual books, [RxSwift: Reactive Programming with Swift](https://store.raywenderlich.com/products/rxswift), the usual talks like the ones at [Realm Academy](https://academy.realm.io/posts/learning-path-rxswift-from-start-to-finish/) and tutorials which usually cover individual aspects like operators and always using those damn marbles 🙄  
 
-If you are lucky you might find a since open API that also includes some POST and PUT HTTP calls (like [The Movie Database API](https://developers.themoviedb.org/3/account/mark-as-favorite)) but still, is not very reactive and also kinda limiting if you want to explore other concepts like unit testing or if you want to tinker in a reactive but repetitive way that let you try different approaches for the same situation.
+I started hanging around the RxSwift repository reading the [docs](https://github.com/ReactiveX/RxSwift/tree/master/Documentation) (they are great) and one thing I found that is invaluable for experimenting is the Swift Playground that comes with the repo ([here](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Playgrounds.md)) This is a tool you should alwasy keep at hand.
+
+After some time I decided the best was to learn more was to create a dummy app and play with it. But, what kind of app? Most of the apps one can build for tinkering are passive, meaning you find a free service that returns some fancy data, like [Open Weather Map](https://openweathermap.org/api), you fetch it and render it nicely, and that's it. What kind of "Reactive" stuff can be built around a bunch of GET HTTP calls that alwasys return the same thing???
+
+If you are lucky you might find a nice open API that also includes some POST and PUT HTTP calls (like [The Movie Database API](https://developers.themoviedb.org/3/account/mark-as-favorite)) but still, is not very reactive and also kinda limiting if you want to explore other concepts like unit testing or if you want to tinker in a reactive but repetitive way that let you try different approaches for the same situation.
 
 As I wrote on my [twitter bio](https://twitter.com/dev_jac) a long time ago, "_If it doesn't exist I'll make it_".
 
@@ -36,7 +41,7 @@ Without more preamble let's discuss the technology stack.
 |-|
 # Technology
 
-As I mentioned before, we will be using the bundle versions of [Swift](https://developer.apple.com/swift/) and [SwiftUI](https://github.com/ReactiveX/RxSwift) that comes with [Xcode](https://github.com/ReactiveX/RxSwift) (right now it is 11.4 beta 3 (11N132i))
+As I mentioned before, we will be using the bundle versions of [Swift](https://developer.apple.com/swift/) and [SwiftUI](https://developer.apple.com/xcode/swiftui/) that comes with [Xcode](https://developer.apple.com/xcode/) (right now it is 11.4 beta 3 (11N132i))
 
 The project has 2 dependencies:
 1. RxSwift [5.1.0](https://github.com/ReactiveX/RxSwift).
