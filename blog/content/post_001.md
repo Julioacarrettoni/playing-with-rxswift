@@ -5,12 +5,12 @@ date = 2020-03-15
 Learn the background story, explore the sample app and convert our first closure-driven endpoint to the Rx world by using a [Single](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single).
 
 Feel free to use this link to skip all the parafernally of the post and dive directly into the code.  
-➡️ **[Skip intro](#skip_intro)** ⬅️
+**[Skip intro](#skip_intro)**
 <!-- more -->
 # Background story
 The key to a good product is a good story, it is true for presentations<sup>[1](#1)</sup>, commercials<sup>[2](#2)</sup> and even apps<sup>[3](#3)</sup>, so here is the one I came up with for this blog:
 
-You recently joined a small mobile team in a medium company, this company is big enough to have processes and a little burocracy but not big enough to already have a mobile department. Their technology is a little old and most engineers are busy maintaining the core products, they also use a propietary network library (probably written in Objective-C and built on top of [ASIHTTPRequest](https://allseeing-i.com/ASIHTTPRequest/) so there is no way to modify it or use any cool network level feature.  
+You recently joined a small mobile team in a medium sized company, this company is big enough to have processes and a little burocracy but not big enough to already have a mobile department. Their technology is a little old and most engineers are busy maintaining the core products.    
 You will have to work with what you are given and it is rarely going to be ideal, well not ideal for you but ideal for me who control the plot. 😁
 
 Anyway, the company is call _Thomson Brother's Division_ or TBD for short<sup>[4](#4)</sup>, they do a little of everything including logistics. In recent years they decided it was time to modernize and they plan to launch their fleet control system on the mobile world.  
@@ -21,10 +21,11 @@ The CEO wants everything to be modern and shiny, they read somewhere (probably a
 <div align="center"><img src="../../001_react_logo.png" alt="ReactNative logo"><img src="../../rxswift_logo.png" alt="RxSwift Logo"></div>
 
 That's where you enter, they hired you to build those mobile apps using RxSwift and SwiftUI but although you know some RxSwift you don't consider yourself an expert (otherwise you wouldn't be wasting you time here).
-Someone already wrote a proof of concept app that was a success across the company directors and to "save time" you _have to_ build on top of that instead of starting from scratch like any sane human been would do<sup>[5](#5)</sup>.
+Someone already wrote a proof of concept app that was a success across the company directors and to "save time" you _have to_ build on top of that instead of starting from scratch like any sane human been would do<sup>[5](#5)</sup>.  
+BTW the POC also uses a propietary network library (probably written in Objective-C and built on top of [ASIHTTPRequest](https://allseeing-i.com/ASIHTTPRequest/) so there is no way to modify it or use any cool network level feature<sup>[5](#5)</sup>.
 
 ### The app
-The first app we need to build is the "Overview" app. Is an app where managers can see the current status of their distribution center.  
+The first app we need to build is the "Overview" app. An app where managers can see the current status of their distribution center.  
 A distribution center has couriers and vehicles, clients make requests and packages are delivered from the distribution center to the client address, dependending of the distance the courier might go on foot or in a vehicle.
 The App has to show:
 1. A Map that shows the locations and status of:
@@ -38,20 +39,20 @@ The App has to show:
    * Packages
    * Vehicles
 
- The POC only covers the map, we need to build the rest but on this episode we will only focus on the **Map** part.
+ The POC only covers the map, we need to build the rest but on this post we will only focus on the **Map** part.
 
 ### The Server
 Sadly as this company has been running for a long time most of the core technology is old. The server is build on some very old and obsolete technology, something like Java… just teasing, it's build on COBOL and communicates back using CORBA and SOAP.<sup>[5](#5)</sup>.  
 
 <div align="center"><img src="../../001_abacus.jpg" alt="The ALU unit on the server"></div>
 
-Luckily the guy who wrote the POC app is a backend engineer and created a ruby middleware that translates to JSON so we can use it. We don't care what the JSON looks like parsing server responses is not something we will cover on this episodes in detail we will just relay on the [FakeService framework](@/post_000.md#a-different-sample-app) to abstract from all that noise, anyway all this background story is to say that the server engineers are busy and you have to work with whatever endpoind you have.
+Luckily the guy who wrote the POC app is a backend engineer and created a ruby middleware that translates to JSON. We don't care what the JSON looks like, parsing server responses is not something we will cover on this blog in detail. We will forget about it and rely on the [FakeService framework](@/post_000.md#a-different-sample-app) to abstract from all that noise, anyway all this background story is to say that the server engineers are busy and you have to work with whatever endpoinds you are given and get creative with them.
 
 ||
 |-|
 # Work
 ### Goal {#skip_intro}
-On this episode our goal is to add the RxSwift dependency into the PoC project and then rewrite the only endpoint we have to be more "Reactive".
+On this post our goal is to add the RxSwift dependency into the PoC project and then rewrite the only endpoint we have to be more "Reactive".
 
 ### Code 
 You will need Xcode 11.4 or newer.
@@ -60,7 +61,7 @@ You can download the sample apps from [here](https://github.com/Julioacarrettoni
 
 Open the `RxPlaying.xcodeproj` project. You will notice it has two targets 
 <div align="center"><img src="../../001_structure.png" alt="Project folders and targets"></div>
-For simplicity I won't cover Unit testing on this episode and I removed the unit tests for the FakeService framework, but believe me, it has Unit tests, a lot of them 😬, no, really it does!
+For simplicity I won't cover Unit testing on this post and I removed the unit tests for the FakeService framework, but believe me, it has Unit tests, a lot of them 😬 (no, really, it does!)
 
 You can go ahead and run the RxPlaying target if you like, you can choose to run it on iOS or MacOS (if you are running Catalina) either will do although it will look better on iOS, everytime you run the application the same secuence will play. The map starts centered on the ficticious warehouse currently on the corner of Ellis and Stockton in San Francisco, then a client request a package near Pier 9 and Simon gets dispatched there on a car. 🚘  
 The same JSON files (available inside the FakeService framework) are played over and over again, there is enough data for a little over 1 hour of activity for a total of 4 couriers, 2 vehicles and 17 packages being delivered to 13 different locations (some request more than one package)
@@ -372,7 +373,7 @@ private func refreshData() {
 Almost there, we have forgotten to grab onto the disposable, if we don't nothing will happens, besides the useful compile warning that is also properly documented on the ❤️[docs](https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/Documentation/Warnings.md)❤️ but again it could be a little ovrwhelming so **TL;DR** version, we just grab all those disposables and thrown them into a bag, we tied the lifetime of the bag to something that makes sense like our `View` and we can't forget about it. If we leave this page the `View` gets deallocated, that kills the bad and the bag in turn kills all the disposables on it and they do the cleanup on their last breath. ☠️  
 
 Sometimes you want to have more control, for example you want to stop any pending request when transitioning to a new screen, in that case just throw the bag away.  
-It is also normal to have different bags at the same time so you can have more granular control over the lifetime of different disposables by adding them to different bags, this is perfectly fine although probably there are better ways to handle those cases in more _reactive_ ways (pun intended), we will talk more about this in future episodes when we get to some nicely complicated examples 😉.   
+It is also normal to have different bags at the same time so you can have more granular control over the lifetime of different disposables by adding them to different bags, this is perfectly fine although probably there are better ways to handle those cases in more _reactive_ ways (pun intended), we will talk more about this in future posts when we get to some nicely complicated examples 😉.   
 
 Anyways, back on topic. Let's add a local atribute to our view
 ```Swift
@@ -418,14 +419,45 @@ private func refreshData() {
 - Let's not overthink too much nor get ahead of ourselves… we will eventually get to that. 😅
 
 Now you can run the app again and notice that everything still works. 🎉
-Now we are done and we can end this episode
+Now we are done and we can end this post
 - "_Aren't you supposed to do a summary or conclusion or something like that?_" 🤔  
 
 **FINE** 😒
 
 ## Conclusions
 
+At this point if you think this was easy and useful maybe you weren't paying too much attention. We gained nothing so far, we introduced a gigantic dependency, the code is way more verbose, our build times went out of the window and we have nothing better thant the straight fordward closure we have at the beginning. Also we are still doing polling in the most horrible way possible.  
+Don't get me wrong, wrapping simple endpoints using [Single](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single) is not wrong, is just that so far I have showed you nothing new that can be done with [RxSwift](https://github.com/ReactiveX/RxSwift) to make it a worthly addition into the codebase.  
+If you stay with me I can show you some cool tricks and make all this worth it. For now this was just an entreé, a warm up. Let's spice things a little on the next post by introducing some errors and uncertainties and see how we can handle them with [RxSwift](https://github.com/ReactiveX/RxSwift)
+
 ### Bonus track
+
+I'll give you a little bonus track for this first post, when I built [FakeService framework](@/post_000.md#a-different-sample-app) I used the concept of dependency inyection described on [pointfree.co](https://www.pointfree.co), in particular starting on [this episode](https://www.pointfree.co/episodes/ep16-dependency-injection-made-easy): "_Dependency Injection Made Easy_".
+
+FakeService has a static struct with the name of [Environment](https://github.com/Julioacarrettoni/playing-with-rxswift/blob/master/001/Before/FakeService/FakeServices.swift#L3-L11) that exposes control to certain aspects of the framework, the ones that are more fun are:
+- `delay`: Controls the delay for each request.
+- `tick`: Is the internal clock and returns the numbers of seconds since the start of the app.
+
+With this we can make the app a little more interesting and useful, for example we can override `tick` so instead of returning the amount of seconds since the app launches it does something like this:
+
+```Swift
+let referenceDate = Date(timeIntervalSinceNow: -600)
+FakeService.Current.tick = { -referenceDate.timeIntervalSinceNow}
+```
+This way the recording starts playing 10 minutes into it which is 1 minute before "James" completes a delivery, this is useful to retry the same scenario over and over again.
+
+Or we can get more crazy and do something like this:
+
+```Swift
+let ticksPerSecond = 30
+let referenceDate = Date(timeIntervalSinceNow: 0)
+FakeService.Current.tick = { -referenceDate.timeIntervalSinceNow * Double(ticksPerSecond)}
+FakeService.Current.delay = { 0 }
+```
+Every real world second is 30 seconds worth of recording so things become a little more insteresting and less dull, which is nice to keep re-testing things without diying of boredom.
+
+Anyway have fun with it, now you can watch the whole hour worth of content without having to waste a real hour 😉.
+
 
 ##### Footnotes
 <a id='1'>1</a>: [Theguardian.com](https://www.theguardian.com/small-business-network/2017/feb/16/master-art-presenting-tell-story-brief-audience) The guardian: "_Master the art of presenting: tell a story, keep it brief_"  
