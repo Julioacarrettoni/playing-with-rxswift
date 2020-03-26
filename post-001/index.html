@@ -134,9 +134,9 @@
 <p>You recently joined a small mobile team in a medium sized company, this company is big enough to have processes and a little burocracy but not big enough to already have a mobile department. Their technology is a little old and most engineers are busy maintaining the core products.<br />
 You will have to work with what you are given and it is rarely going to be ideal, well not ideal for you but ideal for me who control the plot. 😁</p>
 <p>Anyway, the company is call <em>Thomson Brother's Division</em> or TBD for short<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-001/#4">4</a></sup>, they do a little of everything including logistics. In recent years they decided it was time to modernize and they plan to launch their fleet control system on the mobile world.</p>
-<div align="center"><img src="../../tbd_logo.png" alt="Thomson Brother's Division logo created at freelogodesign.org"><br><small>Logo created at <a href="https://www.freelogodesign.org/">Freelogodesign.org</a></small></div>
+<div align="center"><img src="../../playing-with-rxswift/tbd_logo.png" alt="Thomson Brother's Division logo created at freelogodesign.org"><br><small>Logo created at <a href="https://www.freelogodesign.org/">Freelogodesign.org</a></small></div>
 <p>The CEO wants everything to be modern and shiny, they read somewhere (probably a newsletter) that React Native is the next big thing, they also found that Rx is a react framework available on both Android and iOS so the app has to be build using RxSwift (Yes I know ReactNative and Rx are different things but the CEO doesn't so 🤫).</p>
-<div align="center"><img src="../../001_react_logo.png" alt="ReactNative logo"><img src="../../rxswift_logo.png" alt="RxSwift Logo"></div>
+<div align="center"><img src="../../playing-with-rxswift/001_react_logo.png" alt="ReactNative logo"><img src="../../playing-with-rxswift/rxswift_logo.png" alt="RxSwift Logo"></div>
 <p>That's where you enter, they hired you to build those mobile apps using RxSwift and SwiftUI but although you know some RxSwift you don't consider yourself an expert (otherwise you wouldn't be wasting you time here).
 Someone already wrote a proof of concept app that was a success across the company directors and to &quot;save time&quot; you <em>have to</em> build on top of that instead of starting from scratch like any sane human been would do<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-001/#5">5</a></sup>.<br />
 BTW the POC also uses a propietary network library (probably written in Objective-C and built on top of <a href="https://allseeing-i.com/ASIHTTPRequest/">ASIHTTPRequest</a> so there is no way to modify it or use any cool network level feature<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-001/#5">5</a></sup>.</p>
@@ -166,7 +166,7 @@ The App has to show:</p>
 <p>The POC only covers the map, we need to build the rest but on this post we will only focus on the <strong>Map</strong> part.</p>
 <h3 id="the-server">The Server</h3>
 <p>Sadly as this company has been running for a long time most of the core technology is old. The server is build on some very old and obsolete technology, something like Java… just teasing, it's build on COBOL and communicates back using CORBA and SOAP.<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-001/#5">5</a></sup>.</p>
-<div align="center"><img src="../../001_abacus.jpg" alt="The ALU unit on the server"></div>
+<div align="center"><img src="../../playing-with-rxswift/001_abacus.jpg" alt="The ALU unit on the server"></div>
 <p>Luckily the guy who wrote the POC app is a backend engineer and created a ruby middleware that translates to JSON. We don't care what the JSON looks like, parsing server responses is not something we will cover on this blog in detail. We will forget about it and rely on the <a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-000/#a-different-sample-app">FakeService framework</a> to abstract from all that noise, anyway all this background story is to say that the server engineers are busy and you have to work with whatever endpoinds you are given and get creative with them.</p>
 <table><thead><tr><th></th></tr></thead><tbody>
 </tbody></table>
@@ -177,11 +177,11 @@ The App has to show:</p>
 <p>You will need Xcode 11.4 or newer.</p>
 <p>You can download the sample apps from <a href="https://github.com/Julioacarrettoni/playing-with-rxswift/tree/master/001">here</a>, you should start working on the <em>before</em> folder, at the end it should look like the <em>after</em> folder.</p>
 <p>Open the <code>RxPlaying.xcodeproj</code> project. You will notice it has two targets </p>
-<div align="center"><img src="../../001_structure.png" alt="Project folders and targets"></div>
+<div align="center"><img src="../../playing-with-rxswift/001_structure.png" alt="Project folders and targets"></div>
 For simplicity I won't cover Unit testing on this post and I removed the unit tests for the FakeService framework, but believe me, it has Unit tests, a lot of them 😬 (no, really, it does!)
 <p>You can go ahead and run the RxPlaying target if you like, you can choose to run it on iOS or MacOS (if you are running Catalina) either will do although it will look better on iOS, everytime you run the application the same secuence will play. The map starts centered on the ficticious warehouse currently on the corner of Ellis and Stockton in San Francisco, then a client request a package near Pier 9 and Simon gets dispatched there on a car. 🚘<br />
 The same JSON files (available inside the FakeService framework) are played over and over again, there is enough data for a little over 1 hour of activity for a total of 4 couriers, 2 vehicles and 17 packages being delivered to 13 different locations (some request more than one package)</p>
-<div align="center"><img src="../../001_macos.png" alt="MacOS sample app"><img src="../../001_ios.png" alt="iOS Sample App"></div>
+<div align="center"><img src="../../playing-with-rxswift/001_macos.png" alt="MacOS sample app"><img src="../../playing-with-rxswift/001_ios.png" alt="iOS Sample App"></div>
 <p>If you checkout the views inside the RxPlaying target there are 2, <a href="https://github.com/Julioacarrettoni/playing-with-rxswift/blob/master/001/Before/RxPlaying/Views/ContentView.swift#L4">ContentView</a> and <a href="https://github.com/Julioacarrettoni/playing-with-rxswift/blob/master/001/Before/RxPlaying/Views/MapView.swift#L5">MapView</a>, we will be ignoring the <code>MapView</code> for now, all it has is code to render the annotations on the map, animate them and a some boiler plate to communicate between UIKit and SwiftUI.</p>
 <p><code>ContentView</code> on the other hand is quite simple:</p>
 <pre style="background-color:#2b303b;">
@@ -207,15 +207,15 @@ This is what we want to improve with a little of Rx. So let's get started.</p>
 <h3 id="adding-the-dependency">Adding the dependency</h3>
 <p>We will be adding RxSwift as a Swift Package dependency, (you can read why on the <a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-000/#technology">previous post</a>), you can find some details on the RxSwift repository readme.md file (<a href="https://github.com/ReactiveX/RxSwift#swift-package-manager">here</a>) but with the recent versions of Xcode it has gotten quite simple to do.<br />
 Go to <code>Files</code>→<code>Swift Packages</code>→<code>Add Package Dependency…</code></p>
-<div align="center"><img src="../../001_package_manager.png" alt="Xcode File menu showing add package"></div>
+<div align="center"><img src="../../playing-with-rxswift/001_package_manager.png" alt="Xcode File menu showing add package"></div>
 <p>On the top of the page enter the URL to the RxSwift repo <a href="https://github.com/ReactiveX/RxSwift">https://github.com/ReactiveX/RxSwift</a> and hit <code>Next</code>.</p>
-<div align="center"><img src="../../001_package_manager_1.png" alt="Step 1, enter repository URL"></div>
+<div align="center"><img src="../../playing-with-rxswift/001_package_manager_1.png" alt="Step 1, enter repository URL"></div>
 <p>On the next screen enter that we want to be using &quot;Up to next mayor&quot; and the version is <code>5.1.0</code> </p>
-<div align="center"><img src="../../001_package_manager_2.png" alt="Step 2, select version"></div>
+<div align="center"><img src="../../playing-with-rxswift/001_package_manager_2.png" alt="Step 2, select version"></div>
 <p>Now you have to select which of all the available frameworks we want, for now we will just use RxSwift.</p>
-<div align="center"><img src="../../001_package_manager_3.png" alt="Step 3, select frameworks"></div>
+<div align="center"><img src="../../playing-with-rxswift/001_package_manager_3.png" alt="Step 3, select frameworks"></div>
 <p>And finally we are left on the <code>Swift Packages</code> tab for the project configuration, so as you can guess RxSwift is now available for all our targets.</p>
-<div align="center"><img src="../../001_package_manager_4.png" alt="Step 4, project view showing all swift packages dependencies"></div>
+<div align="center"><img src="../../playing-with-rxswift/001_package_manager_4.png" alt="Step 4, project view showing all swift packages dependencies"></div>
 <p>I'm not goign to compare tools or advocate in favor of some or the others as this is not the point of the blog… but…<br />
 <strong>COME ON</strong> that was super easy and straight forward!!! 😄</p>
 <h3 id="using-rxswift">Using RxSwift</h3>
@@ -415,7 +415,7 @@ Also jokes aside we will be missing some cool functionality from Rx when we don'
 </span></pre>
 <p>But as I said before, if we don't subscribe, nothing happens (besides that warning about unused result).<br />
 When you try to subscribe you will that you have several options:</p>
-<div align="center"><img src="../../001_subscribe.png" alt="Autocomplete results for subscribe on a Single"></div>
+<div align="center"><img src="../../playing-with-rxswift/001_subscribe.png" alt="Autocomplete results for subscribe on a Single"></div>
 <ul>
 <li>The 1st one subscribes and lets the <a href="https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single">Single</a> run and do it's thing but when we don't particularly care about the result.</li>
 <li>The 2nd one let's you subscribe on a specific scheduler, this is not about a particular thread, or queue, it's bigger than that, you can read more on the aweseome ❤️<a href="https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/Documentation/Schedulers.md">docs</a>❤️ we will revisit those later (very later) in this blog, for now all we need to know is:</li>
