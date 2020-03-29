@@ -413,22 +413,21 @@ private func refreshData() {
         .disposed(by: self.disposeBag)
 }
 ```
-- "_Aren't you forgetting to use `[weak self]`?_" 🤔  
-- Well, no, views are structs.
-- "_But if views are structs, then when the state changes and the view gets recreated the `disposeBag` get recreated and everything is disposed so…_" 🤔  
-- Let's not overthink too much nor get ahead of ourselves… we will eventually get to that. 😅
+By the way, I'm not using `[weak self]` as in SwiftUI views are structs, but that transitions ourselves into the question "_if views are value types and they are recreated when the state changes, what happens to the dispose bag and everthing on them?_"
+That part is a little tricky, let's leave that for later when we have some more endpoints to play with so the example is more straight forward and easy to follow.  
+Now you can run the app again and notice that everything still works. 🎉  
 
-Now you can run the app again and notice that everything still works. 🎉
-Now we are done and we can end this post
-- "_Aren't you supposed to do a summary or conclusion or something like that?_" 🤔  
-
-**FINE** 😒
+I think is time to wrap up this post.
 
 ## Conclusions
 
-At this point if you think this was easy and useful maybe you weren't paying too much attention. We gained nothing so far, we introduced a gigantic dependency, the code is way more verbose, our build times went out of the window and we have nothing better thant the straight fordward closure we have at the beginning. Also we are still doing polling in the most horrible way possible.  
+At this point if you think this was easy and useful maybe you weren't paying too much attention. We gained nothing so far, we introduced a gigantic dependency, the code is way more verbose, our build times went out of the window and we have nothing better than closure we have at the beginning which at last was very straight fordward. Also we are still doing polling in the most horrible way possible .  
 Don't get me wrong, wrapping simple endpoints using [Single](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single) is not wrong, is just that so far I have showed you nothing new that can be done with [RxSwift](https://github.com/ReactiveX/RxSwift) to make it a worthly addition into the codebase.  
+
 If you stay with me I can show you some cool tricks and make all this worth it. For now this was just an entreé, a warm up. Let's spice things a little on the next post by introducing some errors and uncertainties and see how we can handle them with [RxSwift](https://github.com/ReactiveX/RxSwift)
+
+#### Unit tests
+Regarding unit tests, there is not much to test so far, whatever test we could have for the original app are still valid as we haven't changed the behavior not introduced any new behavior.
 
 ### Bonus track
 
