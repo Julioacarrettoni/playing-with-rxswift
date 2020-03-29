@@ -35,7 +35,7 @@ As I wrote on my [twitter bio](https://twitter.com/dev_jac) a long time ago, "_I
 
 Initially, I started building it just for myself and it was never intended to be shared so let me warn you, it is going to be rough around the edges… and sometimes on the middle, top, bottom, front and rear too 😅.
 
-I sharing it because in the same way you might [figure out a bug while explaining it to a rubber duck 🦆](https://en.wikipedia.org/wiki/Rubber_duck_debugging) explaining something you think you understand to someone else also helps you understand it better yourself.
+I'm sharing it because in the same way you might [figure out a bug while explaining it to a rubber duck 🦆](https://en.wikipedia.org/wiki/Rubber_duck_debugging) explaining something you think you understand to someone else also helps you understand it better yourself.
 
 Also, I thought this whole blogging thing was going to be easier, but so far is torture! ☠️
 
@@ -45,16 +45,18 @@ Without more preamble let's discuss the technology stack 🥞.
 |-|
 # Technology
 
-We will be using the bundle versions of [Swift](https://developer.apple.com/swift/) and [SwiftUI](https://developer.apple.com/xcode/swiftui/) that comes with [Xcode](https://developer.apple.com/xcode/) (right now it is 11.4 beta 3 (11N132i))
+The bundle versions of [Swift](https://developer.apple.com/swift/) and [SwiftUI](https://developer.apple.com/xcode/swiftui/) that comes with [Xcode](https://developer.apple.com/xcode/) (right now it is 11.4 beta 3 (11N132i)) will be used and therefore recommended to follow this posts.
+
+<div align="center"><img src="../../000_xcode_icon.png" alt="RxSwift Logo"></div>
 
 The project has 2 dependencies:
 1. RxSwift [5.1.0](https://github.com/ReactiveX/RxSwift).
 2. FakeService, a toy Swift framework built for this project.
 
-We will integrate RxSwift using [Swift Package manager](https://swift.org/package-manager/).  
+RxSwift will be integrated using [Swift Package manager](https://swift.org/package-manager/).  
 **FakeService** is be pre-loaded and configured on the sample project.
 
-The objective of this project is to explore the capabilities of RxSwift and try to build complex/funny contractions with it, SwiftUI and Swift Package manager where chosen because those require less explanation and setup than the alternatives, I believe they are a good fit for this project.  
+The objective of this project is to explore the capabilities of RxSwift and try to build complex/funny contractions with it, SwiftUI and Swift Package manager were chosen because those require less explanation and setup than the alternatives, I believe they are a good fit for this project.  
 I'm not advocating for those technologies in particular over their alternatives.
 
 
@@ -68,12 +70,14 @@ Every episode has a companion folder on the repo that contains the code as at th
 As I ranted before, most tutorials or sample apps are too simple or far from the "real" world, what makes this sample app different from others is the **FakeService** framework, nothing more than a simple service mock.  
 I'm shipping the source code so you can see it doesn't contain any magic (or good coding practices 😁)
 
-This framework impersonates our fictitious company backend, this way we don't have to work with boring data or install fancy software to deal with the 4096 dependencies from the other fancy software used to run a different fancy software just to have some fun data to play with, plus it comes with some handy Mock functionality to control time for example.
+This framework impersonates our fictitious company backend, this way we don't have to work with boring data or install fancy software to deal with the 4096 dependencies from the other fancy software used to run a different fancy software just to have some fun data to play with, plus it comes with some handy mock functionality to control time for example.
 
-The framework comes with pre-recorded activity, exposes some "endpoints" and responds to it as a server would do, for simplicity first episodes contain a simpler version of it but more functionality is made available as episodes progress (if I ever publish them that is)
+The framework comes with pre-recorded activity, exposes some server look-alike "endpoints", for simplicity first episodes contain a simpler version of it but more functionality is made available as episodes progress (if I ever publish them that is)
 
 # Topics
-The main topic of the blog is RxSwift and trying to find ways to leverage it's power while trying not to paint ourselves into a corner. We will also cover some details on SwiftUI required to build the sample app. I also cover some topics in regards to Unit testing usually at the end of the episodes.
+The main topic of the blog is RxSwift and trying to find ways to leverage it's capabilities while trying not to paint ourselves into a corner.  
+Unit testing, testability and debugability will be covered briefly at the end of each post, and in depth on special posts.
+Some details on SwiftUI will also be covered as it is required to build the UI of the sample apps, but it won't be in depth.
 
 Anyway thank you for reading all this impenetrable wall of text and I hope you enjoy the project, feel free to drop me a comment on twitter.
 
