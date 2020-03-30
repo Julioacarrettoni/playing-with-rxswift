@@ -50,8 +50,8 @@ Luckily the guy who wrote the POC app is a backend engineer and created a ruby m
 
 ||
 |-|
-# Work
-### Goal {#skip_intro}
+# Work {#skip_intro}
+### Goal
 On this post our goal is to add the RxSwift dependency into the PoC project and then rewrite the only endpoint we have to be more "Reactive".
 
 ### Code 
@@ -209,13 +209,14 @@ public enum SingleEvent<Element> {
 }
 ```
 
-The closure has to return a [Disposable](https://github.com/ReactiveX/RxSwift/blob/53cd723d40d05177e790c8c34c36cec7092a6106/RxSwift/Disposable.swift) (Don't bother with the link there is not much there) The idea with disposables is that the consumer of this methods hold on to them for as long as they are interested in getting values out of the "RxThingy", when they are not longer interested they just throw away the disposable. 🚮  
-The Disposable takes a closure that gets executed when the disposable "dies" or the "RxThingy" completes it's task, some of them never do as they are "infinite" but the single isn't.  
+The closure has to return a [Disposable](https://github.com/ReactiveX/RxSwift/blob/53cd723d40d05177e790c8c34c36cec7092a6106/RxSwift/Disposable.swift) (Don't bother with the link there is not much there) The idea with disposables is that the consumer of this methods hold on to them for as long as they are interested in getting values out of the observables, when they are not longer interested they just throw away the disposable. 🚮  
+The Disposable takes a closure that gets executed when the disposable "dies" or the observable completes it's task, some of them never do as they are "infinite" but the single isn't.  
 As you can see in the original example, the disposable calls `task.cancel()` to perform some clean up.
 ```Swift
 return Disposables.create { task.cancel() }
 ```
 
+<a id='multiple'></a>
 You can create as many [Singles](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single) as you want and nothing will happen, is not until you "use" them that the closure is computed, also you can create only one [Single](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single) and "re-use" it multiple times, every time you "use" it the closure gets run again.  
 
 To "use" a [Single](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single) or any other [ObservableType](https://github.com/ReactiveX/RxSwift/blob/c6c0c540109678b96639c25e9c0ebe4a6d7a69a9/RxSwift/ObservableType.swift#L10) you [subscribe](https://github.com/ReactiveX/RxSwift/blob/c6c0c540109678b96639c25e9c0ebe4a6d7a69a9/RxSwift/ObservableType.swift#L34) to it, this returns a [Disposable](https://github.com/ReactiveX/RxSwift/blob/53cd723d40d05177e790c8c34c36cec7092a6106/RxSwift/Disposable.swift) that you should hold onto or nothing will happen (and throw away when you no longer care about it), we will worry about this in a bit, let's go back to our example:
@@ -338,6 +339,7 @@ private func refreshData() {
 }
 ```
 
+<a id='subscribe_section'></a>
 But as I said before, if we don't subscribe, nothing happens (besides that warning about unused result).  
 When you try to subscribe you will that you have several options:
 <div align="center"><img src="../../001_subscribe.png" alt="Autocomplete results for subscribe on a Single"></div>
@@ -419,10 +421,10 @@ Now you can run the app again and notice that everything still works. 🎉
 
 I think is time to wrap up this post.
 
-## Conclusions
+# Conclusions
 
 At this point if you think this was easy and useful maybe you weren't paying too much attention. We gained nothing so far, we introduced a gigantic dependency, the code is way more verbose, our build times went out of the window and we have nothing better than closure we have at the beginning which at last was very straight fordward. Also we are still doing polling in the most horrible way possible .  
-Don't get me wrong, wrapping simple endpoints using [Single](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single) is not wrong, is just that so far I have showed you nothing new that can be done with [RxSwift](https://github.com/ReactiveX/RxSwift) to make it a worthly addition into the codebase.  
+Don't get me wrong, is not that wrapping simple endpoints using [Single](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single) is wrong, is just that so far I have showed you nothing new that can be done with [RxSwift](https://github.com/ReactiveX/RxSwift) to make it a worthly addition into the codebase.  
 
 If you stay with me I can show you some cool tricks and make all this worth it. For now this was just an entreé, a warm up. Let's spice things a little on the next post by introducing some errors and uncertainties and see how we can handle them with [RxSwift](https://github.com/ReactiveX/RxSwift)
 
