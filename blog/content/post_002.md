@@ -188,7 +188,7 @@ Service.systemSingle
     .disposed(by: self.disposeBag)
 ```
 
-Now if you run the application it will look nice as before even if every other request fails, furthermore we have a nice separation between the happy path and the sad path. As a reminder we have other `subscribe` options that were discussed on the previous post [here](@/post_001.md#subscribe_section).
+Now if you run the application it will look nice as before even if every other request fails, furthermore we have a nice separation between the happy path and the sad path. As a reminder we have other `subscribe` options that were discussed on the previous post [here](/post-001#subscribe_section).
 
 Now it seems we have covered the "handle errors gracefully" section, **spoiler alert**, we haven't, what we won't notice until a little later in the post.
 &nbsp;  
@@ -197,8 +197,8 @@ Now it seems we have covered the "handle errors gracefully" section, **spoiler a
 ||
 |-|
 ### Intermission
-[Skip intermission](#skip_intermission)
-Before continuing talking about logging and testability there is something I would like to show you, on the previous post ([here](@/post_001.md#multiple)) I mentioned that we can re-use the same single multiple times, so why use a method? why are we re-creating the same Instance over an over again? I mean is not like is a huge performance boost, plus "_[…] premature optimization is the root of all evil (or at least most of it) in programming._"<sup>[5](#5)</sup> Donald Knuth.  
+[Skip intermission](#skip_intermission)  
+Before continuing talking about logging and testability there is something I would like to show you, on the previous post I mentioned that we can re-use the same single multiple times ([here](/post-001#multiple)), so why use a method? why are we re-creating the same Instance over an over again? I mean is not like is a huge performance boost, plus "_[…] premature optimization is the root of all evil (or at least most of it) in programming._"<sup>[5](#5)</sup> Donald Knuth.  
 Still this is the right thing to do plus 0.001% over time compounds and 🦆 our application's performance.  
 What we can do is to use a static variable we only creates once:
 ```Swift
@@ -280,7 +280,7 @@ But there is a better way, an RxWay. All observables have a very useful operator
 
 This operator should not be confused with [map](https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L203-L208) or any of it's variants as this method does not modifies the stream in any way, that's what "_[…]and propagates all observer messages through the result sequence_" means. Also as you can see it has a lot of options to "hook into", this makes [do](https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L157-L170) great for logging and also debugging your code, by the way there is a [debug](https://github.com/ReactiveX/RxSwift/blob/6b2a406b928cc7970874dcaed0ab18e7265e41ef/RxSwift/Observables/Debug.swift#L23) operator as well.
 
-Now we can add this at the end of our Single definition and we will be effortlessly "logging" all results from it.
+Now we can add this at the end of our Single definition and we will be effortlessly "logging" all results from it no matter where we use it.
 
 ```Swift
 .do(onSuccess: { _ in
@@ -300,6 +300,24 @@ This is the output of the console now:
 [Service] ✅ Success  
 [Service] ❌ request error: unknown  
 [refreshData()] ❌ request error: unknown  
+
+We can also go back to `ContentView` and add a [do](https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L157-L170) there so we can separate logging from business logic like this:
+
+```Swift
+private func refreshData() {
+    Service.systemSingle
+        .do(onError: { error in
+            print("[\(#function)] ❌ request error: \(error)")
+        })
+        .subscribe(onSuccess: { globalState in
+            self.globalState = globalState
+            self.refreshData()
+        }, onError: { error in
+            self.refreshData()
+        })
+        .disposed(by: self.disposeBag)
+}
+```
 
 &nbsp;  
 &nbsp;  
