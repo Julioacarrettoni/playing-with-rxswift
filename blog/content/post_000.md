@@ -47,7 +47,7 @@ Without more preamble let's discuss the technology stack 🥞.
 
 The bundle versions of [Swift](https://developer.apple.com/swift/) and [SwiftUI](https://developer.apple.com/xcode/swiftui/) that comes with [Xcode](https://developer.apple.com/xcode/) (right now it is 11.4 beta 3 (11N132i)) will be used and therefore recommended to follow this posts.
 
-<div align="center"><img src="../../Swift_logo.png" alt="Swift Logo" style="margin:25px"><img src="../../SwiftUI_logo.png" alt="SwiftUI Logo" style="margin:25px"><img src="../../000_xcode_icon.png" alt="RxSwift Logo" style="margin:25px"></div>
+<div align="center"><img src="../../swift_logo.png" alt="Swift Logo" style="margin:25px"><img src="../../swiftui_logo.png" alt="SwiftUI Logo" style="margin:25px"><img src="../../000_xcode_icon.png" alt="RxSwift Logo" style="margin:25px"></div>
 
 The project has 2 dependencies:
 1. RxSwift [5.1.0](https://github.com/ReactiveX/RxSwift).
