@@ -46,7 +46,7 @@ Sadly as this company has been running for a long time most of the core technolo
 
 <div align="center"><img src="../../001_abacus.jpg" alt="The ALU unit on the server"></div>
 
-Luckily the guy who wrote the POC app is a backend engineer and created a ruby middleware that translates to JSON. We don't care what the JSON looks like, parsing server responses is not something we will cover on this blog in detail. We will forget about it and rely on the [FakeService framework](@/post_000.md#a-different-sample-app) to abstract from all that noise, anyway all this background story is to say that the server engineers are busy and you have to work with whatever endpoinds you are given and get creative with them.
+Luckily the guy who wrote the POC app is a backend engineer and created a ruby middleware that translates to JSON. We don't care what the JSON looks like, parsing server responses is not something we will cover on this blog in detail. We will forget about it and rely on the [FakeService framework](/post-000.md#a-different-sample-app) to abstract from all that noise, anyway all this background story is to say that the server engineers are busy and you have to work with whatever endpoinds you are given and get creative with them.
 
 ||
 |-|
@@ -94,7 +94,7 @@ This is what we want to improve with a little of Rx. So let's get started.
 
 ### Adding the dependency
 
-We will be adding RxSwift as a Swift Package dependency, (you can read why on the [previous post](@/post_000.md#technology)), you can find some details on the RxSwift repository readme.md file ([here](https://github.com/ReactiveX/RxSwift#swift-package-manager)) but with the recent versions of Xcode it has gotten quite simple to do.  
+We will be adding RxSwift as a Swift Package dependency, (you can read why on the [previous post](/post-000.md#technology)), you can find some details on the RxSwift repository readme.md file ([here](https://github.com/ReactiveX/RxSwift#swift-package-manager)) but with the recent versions of Xcode it has gotten quite simple to do.  
 Go to `Files`→`Swift Packages`→`Add Package Dependency…`
 <div align="center"><img src="../../001_package_manager.png" alt="Xcode File menu showing add package"></div>
 
@@ -433,7 +433,7 @@ Regarding unit tests, there is not much to test so far, whatever test we could h
 
 ### Bonus track
 
-I'll give you a little bonus track for this first post, when I built [FakeService framework](@/post_000.md#a-different-sample-app) I used the concept of dependency inyection described on [pointfree.co](https://www.pointfree.co), in particular starting on [this episode](https://www.pointfree.co/episodes/ep16-dependency-injection-made-easy): "_Dependency Injection Made Easy_".
+I'll give you a little bonus track for this first post, when I built [FakeService framework](/post-000.md#a-different-sample-app) I used the concept of dependency inyection described on [pointfree.co](https://www.pointfree.co), in particular starting on [this episode](https://www.pointfree.co/episodes/ep16-dependency-injection-made-easy): "_Dependency Injection Made Easy_".
 
 FakeService has a static struct with the name of [Environment](https://github.com/Julioacarrettoni/playing-with-rxswift/blob/master/001/Before/FakeService/FakeServices.swift#L3-L11) that exposes control to certain aspects of the framework, the ones that are more fun are:
 - `delay`: Controls the delay for each request.

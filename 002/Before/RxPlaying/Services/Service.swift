@@ -73,13 +73,11 @@ struct Service {
             
             return Disposables.create()
         }
-//        .timeout(.seconds(5), scheduler: MainScheduler.instance)
         .do(onSuccess: { _ in
             print("[\(#function)] ✅ Success")
         }, onError: { error in
             print("[\(#function)] ❌ request error: \(error)")
         })
-//            .retry(3)
     }()
     
     static var systemSingle_FINAL: Single<GlobalState> = {

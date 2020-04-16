@@ -3,6 +3,7 @@ import Foundation
 public struct Environment {
     public var tick: () -> Double
     public var delay: () -> Double
+    public var failNext: () -> Bool
     public var courierFile :String
     public var tripsFile :String
     public var packagesFile :String
@@ -15,11 +16,22 @@ var appLaunchedDate = Date()
 extension Environment {
     static var production = Environment(tick: { -appLaunchedDate.timeIntervalSinceNow },
                                         delay: { 1.0},
+                                        failNext: { false },
                                         courierFile: "couriers",
                                         tripsFile: "trips",
                                         packagesFile: "packages",
                                         vahiclesFile: "vehicles",
                                         centralLocation: Location.centralLocation
+    )
+    
+    static var mock = Environment(tick: { 1 },
+                                  delay: { 0 },
+                                  failNext: { false },
+                                  courierFile: "mockCouriers",
+                                  tripsFile: "mockTrips",
+                                  packagesFile: "mockPackages",
+                                  vahiclesFile: "mockVehicles",
+                                  centralLocation: Location.centralLocation
     )
 }
 
@@ -41,14 +53,20 @@ public final class FakeServices {
     }
     
     public func getSystemState(completion: @escaping (GlobalState?) -> ()) {
+        guard !Current.failNext() else {
+            return self.asyncDelay { completion(nil) }
+        }
+
+        let tick = Int(Current.tick())
+        let couriers = self.latestCourierState(for: tick)
+        let packages = self.latestPackagesState(for: tick, given: couriers)
+        let vehicles = self.latestVehiclesState(for: tick, given: couriers)
         self.asyncDelay {
-            let tick = Int(Current.tick())
-            let couriers = self.latestCourierState(for: tick)
             completion(GlobalState(
                 central: Current.centralLocation,
                 couriers: couriers,
-                packages: self.latestPackagesState(for: tick, given: couriers),
-                vehicles: self.latestVehiclesState(for: tick, given: couriers))
+                packages: packages,
+                vehicles: vehicles)
             )
         }
     }
