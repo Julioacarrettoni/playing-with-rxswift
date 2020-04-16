@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+    <!-- Enable responsiveness on mobile devices-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+    <title>
+        
+    </title>
+
+    
+
+<link id="darkly" class="stylesheet" rel="stylesheet"
+    href="https:&#x2F;&#x2F;julioacarrettoni.github.io&#x2F;playing-with-rxswift&#x2F;darkly.css" />
+
+
+    <!-- This script must follow css -->
+    
+    <script type="text/javascript" src="https:&#x2F;&#x2F;julioacarrettoni.github.io&#x2F;playing-with-rxswift&#x2F;js&#x2F;zulma_switchcss.js"></script>
+    
+
+    
+
+    
+    <script defer type="text/javascript" src="https:&#x2F;&#x2F;julioacarrettoni.github.io&#x2F;playing-with-rxswift&#x2F;elasticlunr.min.js"></script>
+    <script defer type="text/javascript" src="https:&#x2F;&#x2F;julioacarrettoni.github.io&#x2F;playing-with-rxswift&#x2F;search_index.en.js"></script>
+    
+
+    
+    
+
+    <noscript>
+        <style>
+            .navbar-menu {
+                display: block;
+            }
+
+            .js-only {
+                display: none;
+            }
+        </style>
+    </noscript>
+    
+</head>
+
+<body>
+    
+    
+<!-- START NAV -->
+
+
+    
+
+<header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                
+                <a class="navbar-item" href="/playing-with-rxswift">
+                    
+                    <span>Playing with RxSwift</span>
+                    
+                </a>
+                
+                <span class="navbar-burger burger" data-target="navbarMenu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </div>
+            <div id="navbarMenu" class="navbar-menu">
+                <div class="navbar-end">
+                    
+
+                    
+                    <div class="navbar-item search-container js-only">
+                        <input class="input" id="search" type="search" placeholder="Search">
+
+                        <div class="search-results box">
+                            <div class="search-results__items"></div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+
+    
+
+<!-- END NAV -->
+<main>
+    <section class="container">
+        <div class="columns is-desktop">
+            <div class="column is-10-desktop is-offset-1-desktop">
+                <article itemscope itemtype="http://schema.org/BlogPosting">
+                    <div class="card article">
+                        <div class="card-content">
+                            
+<header>
+    <div class="has-text-centered">
+        <a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/">
+            <p class="title article-title">2. The Single sad path 🐞
+            </p>
+        </a>
+        <div class="tags has-addons level-item">
+            <span class="tag is-rounded">2020-03-15</span>
+                       
+            <span class="tag is-rounded">
+<svg class="i-clock" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round"
+    stroke-linejoin="round" stroke-width="6.25%">
+    <circle cx="16" cy="16" r="14" />
+    <path d="M16 8 L16 16 20 20" />
+</svg>
+<span>&nbsp;22 minute read</span>
+</span>
+        </div>
+    </div>
+</header>
+
+                            <div itemprop="articleBody" class="content article-body">
+                                <p>Now that the endpoint is wrapped in a <a href="https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single">Single</a> and works nicely on the &quot;happy path&quot;, it's time to start working on handling those error scenarios and add some unit tests to try to catch future bugs before they even happen.</p>
+<p><strong><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#skip_intro">Skip intro</a></strong></p>
+<span id="continue-reading"></span><h1 id="background-story">Background story</h1>
+<p>Thomson Brothers Division might be a medium company with some old technological stack but that doesn't mean they do things wrong, the company has some modern process in place to ensure a minimum level of code quality, for example they do Agile software development<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#1">1</a></sup> which as many of us know already it probably means someone read a fancy post on LinkedIn from a consultant trying to sell their services as an Agile facilitator and though &quot;<em>This looks nice, and I don't need to pay any consultant to tell me how to run my team, I'll just follow the first 3 chapters of this book, most of it doesn't apply to us anyway</em>&quot; <sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#2">2</a></sup> and thus &quot;<em>Agile TBD development process</em>&quot; was born (pun intended). They should have hired the consultant, is would have been cheaper on the long run…</p>
+<p>Anyway as a result to that, one thing let to another and the company ended up adopting and <em>adapting</em> <em>&quot;git flow&quot;</em><sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#3">3</a></sup>, so now you have to create a &quot;<em>pull request</em>&quot;<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#3">3</a></sup> into the master branch from your refactor branch.<br />
+By following the company docs you have to complete a checklist in the description of you pull request, some of which are:</p>
+<ul>
+<li>Considers edge cases and non-happy paths</li>
+<li>Handle errors
+<ul>
+<li>Recover from errors gracefully</li>
+<li>Logs errors.</li>
+</ul>
+</li>
+<li>Introduces new unit tests</li>
+</ul>
+<p>Without this the pull request will be rejected.</p>
+<p>On the previous post I intentionally avoided those for the sake of simplicity as the post was getting a little to long. Now is time to pay the debt.<br />
+Not every pull request has to introduce new unit tests, as I said on the previous post, there was not much to test as it was a refactor, now that we are about to improve the error handling and the user experience that might change.</p>
+<table><thead><tr><th></th></tr></thead><tbody>
+</tbody></table>
+<h1 id="skip_intro">Work</h1>
+<h3 id="goal">Goal</h3>
+<p>Fix any issues (bugs, bad user experience) the app might have when working under non-ideal conditions by completing each of the items in this list:</p>
+<ul>
+<li>Considers edge cases and non-happy paths</li>
+<li>Handle errors
+<ul>
+<li>Recover from errors gracefully</li>
+<li>Log errors.</li>
+</ul>
+</li>
+<li>Introduces new unit tests
+ <br />
+ <br />
+ </li>
+</ul>
+<h3 id="code">Code</h3>
+<p>You will need Xcode 11.4 or newer.</p>
+<p>You can download the sample apps from <a href="https://github.com/Julioacarrettoni/playing-with-rxswift/tree/master/002">here</a>, you should start working on the <em>before</em> folder, at the end it should look like the <em>after</em> folder.
+ <br />
+ <br />
+ </p>
+<h4 id="considers-edge-cases-and-non-happy-paths">Considers edge cases and non-happy paths</h4>
+<p>Open the <code>RxPlaying.xcodeproj</code> project. The RxPlaying targets has no changes from the previous post but the FakeService framework has received some small updates for this post, in particular the <a href="https://github.com/Julioacarrettoni/playing-with-rxswift/blob/master/002/Before/FakeService/FakeServices.swift#L3-L11">Environment</a> struct received a new member:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">public var </span><span style="color:#bf616a;">failNext</span><span style="color:#c0c5ce;">: () -&gt; </span><span style="color:#ebcb8b;">Bool
+</span></pre>
+<p>Returning <code>true</code> in this closure makes the next request fail. Right now there is no granular control on any of the closures as we only have a single endpoint and I want to keep things simple.<br />
+We will use this to simulate bad networks when combined with the existing <code>delay</code> member.<br />
+In real life advanced network stacks provide with mock functionality else you can always simulate bad network conditions on your iPhone or your simulator without having to turn airplane mode on or turning off the Wi-Fi, <a href="https://www.natashatherobot.com/simulate-bad-network-ios-simulator/">here</a> is a nice post by <a href="https://twitter.com/natashatherobot">NatashaTheRobot</a> for reference.</p>
+<p>Add this method anywhere on <a href="https://github.com/Julioacarrettoni/playing-with-rxswift/blob/master/002/Before/RxPlaying/Services/Service.swift#L5">Service.swift</a> inside the <code>Service</code> struct.</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">static func </span><span style="color:#bf616a;">overrideNetworkMock</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#b48ead;">var</span><span style="color:#c0c5ce;"> failures = [</span><span style="color:#d08770;">false</span><span style="color:#c0c5ce;">, </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;">]
+    </span><span style="color:#ebcb8b;">FakeService</span><span style="color:#c0c5ce;">.</span><span style="color:#ebcb8b;">Current</span><span style="color:#c0c5ce;">.failNext = {
+        </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> next = failures.removeFirst()
+        failures.append(next)
+        </span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;"> next
+    }
+}
+</span></pre>
+<p>Every time the closure gets invoked we return the first value on the <code>failures</code> array and push it to the back. It cycles through all the values of the array.</p>
+<p>Now we need to call this method once, a good place could be <a href="https://github.com/Julioacarrettoni/playing-with-rxswift/blob/master/002/Before/RxPlaying/SceneDelegate.swift#L12">here</a> in the <code>SceneDelegate.swift</code> file.</p>
+<p>If you run the app half the requests will &quot;fail&quot; and it will look like this:</p>
+<div align="center"><img src="../002_gif_01.gif" alt="GIF animation of the app where icons blink"></div>
+<p>Every time the request fails a <code>nil</code> is returned and blindly forwarded to the <code>MapView</code> View</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#c0c5ce;">.</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onSuccess</span><span style="color:#c0c5ce;">: { globalState </span><span style="color:#b48ead;">in
+    self</span><span style="color:#c0c5ce;">.globalState = globalState
+    </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.refreshData()
+})
+</span></pre>
+<p>The internal implementation of the <code>MapView</code> tries to animates annotation transitions and it fades out annotations that are removed an fading in annotations that are added. As a result we fades out all annotations when the request fails as we are removing all of them bu setting a <code>globalState</code> with <code>nil</code> value and then it fades in all the annotations when a new value of <code>globalState</code> is received.</p>
+<p>We can &quot;patch&quot; this issue in several places, starting with the bug on the <code>MapView</code> when fading in annotations due to view recycling, but in the meantime we will ignore that as is not our main concern.<br />
+We can be tempted to do something like:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#c0c5ce;">.</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onSuccess</span><span style="color:#c0c5ce;">: { globalState </span><span style="color:#b48ead;">in
+    if let</span><span style="color:#c0c5ce;"> globalState = globalState {
+        </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.globalState = globalState
+    }
+
+    </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.refreshData()
+})
+</span></pre>
+<p>And that will certainly fix the issue, but the proper &quot;fix&quot; is to start doing some real error handling and separating concerns.<br />
+We will see soon that this not only fixes the problem but also enables us to do more while keeping everything clean and separated.
+ <br />
+ <br />
+ </p>
+<h4 id="handle-errors-recover-from-errors-gracefully">Handle errors, recover from errors gracefully</h4>
+<p>Let's take a look back at our current implementation of the &quot;reactive&quot; endpoint:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">static func </span><span style="color:#bf616a;">getSystemState</span><span style="color:#c0c5ce;">() -&gt; </span><span style="color:#ebcb8b;">Single</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#ebcb8b;">GlobalState</span><span style="color:#c0c5ce;">?&gt; {
+    </span><span style="color:#ebcb8b;">Single</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#ebcb8b;">GlobalState</span><span style="color:#c0c5ce;">?&gt;.create { single </span><span style="color:#b48ead;">in
+        </span><span style="color:#ebcb8b;">FakeServices</span><span style="color:#c0c5ce;">.shared.getSystemState { globalState </span><span style="color:#b48ead;">in</span><span style="color:#c0c5ce;">
+            single(.</span><span style="color:#d08770;">success</span><span style="color:#c0c5ce;">(globalState))
+        }
+        
+        </span><span style="color:#b48ead;">return </span><span style="color:#ebcb8b;">Disposables</span><span style="color:#c0c5ce;">.create()
+    }
+}
+</span></pre>
+<p>To be honest, <code>FakeService</code> doesn't really helps us as it doesn't return any error, is just return a value or <code>nil</code><sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#2">2</a></sup>, I hope that whatever network stack you have at work in real life is a little more cooperative than this one 😁.</p>
+<p>Let's concentrate on the &quot;body&quot; of our Single:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#ebcb8b;">FakeServices</span><span style="color:#c0c5ce;">.shared.getSystemState { globalState </span><span style="color:#b48ead;">in</span><span style="color:#c0c5ce;">
+    single(.</span><span style="color:#d08770;">success</span><span style="color:#c0c5ce;">(globalState))
+}
+</span></pre>
+<p>We want to only return <code>.success</code> if we have a value, an error otherwise.</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#ebcb8b;">FakeServices</span><span style="color:#c0c5ce;">.shared.getSystemState { globalState </span><span style="color:#b48ead;">in
+    if let</span><span style="color:#c0c5ce;"> globalState = globalState {
+        single(.</span><span style="color:#d08770;">success</span><span style="color:#c0c5ce;">(globalState))
+    } </span><span style="color:#b48ead;">else</span><span style="color:#c0c5ce;"> {
+        single(.</span><span style="color:#d08770;">error</span><span style="color:#c0c5ce;">( ?????????????? ))
+    }
+}
+</span></pre>
+<p>Ok, we need an error first, let's start by creating one inside <code>Service.swift</code>, an easy way is to use an <code>enum</code> with lots of descriptive cases and some <code>vars</code> for stuff like description, analytics etc, but again we don't have much to work with given the current state of <code>FakeService</code>, this is as far as we can go (for now).</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">enum </span><span style="color:#ebcb8b;">GetSystemStateError</span><span style="color:#c0c5ce;">: </span><span style="color:#ebcb8b;">Error</span><span style="color:#c0c5ce;"> {
+    </span><span style="color:#b48ead;">case</span><span style="color:#c0c5ce;"> unknown
+}
+</span></pre>
+<p>Now the end result for the body is:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#ebcb8b;">FakeServices</span><span style="color:#c0c5ce;">.shared.getSystemState { globalState </span><span style="color:#b48ead;">in
+    if let</span><span style="color:#c0c5ce;"> globalState = globalState {
+        single(.</span><span style="color:#d08770;">success</span><span style="color:#c0c5ce;">(globalState))
+    } </span><span style="color:#b48ead;">else</span><span style="color:#c0c5ce;"> {
+        single(.</span><span style="color:#d08770;">error</span><span style="color:#c0c5ce;">(</span><span style="color:#ebcb8b;">GetSystemStateError</span><span style="color:#c0c5ce;">.unknown))
+    }
+}
+</span></pre>
+<p>Let's look at it, it is still easy to read and descriptive, plus now it is explicit that not getting a value from <code>FakeServices.shared.getSystemState</code> is considered an error.<br />
+Furthermore we can now change the whole method and get ride of the optionals:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">static func </span><span style="color:#bf616a;">getSystemState</span><span style="color:#c0c5ce;">() -&gt; </span><span style="color:#ebcb8b;">Single</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#ebcb8b;">GlobalState</span><span style="color:#c0c5ce;">&gt; {
+    </span><span style="color:#ebcb8b;">Single</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#ebcb8b;">GlobalState</span><span style="color:#c0c5ce;">&gt;.</span><span style="color:#d08770;">create</span><span style="color:#c0c5ce;"> { single </span><span style="color:#b48ead;">in
+        </span><span style="color:#65737e;">// Body
+</span><span style="color:#c0c5ce;">    }
+}
+</span></pre>
+<p>This will simplify <code>ContentView</code> as we no longer have to wonder about what we do and what does it means for the Single to return a <code>nil</code>.</p>
+<p>If we run the app now, it won't blink anymore, but also it won't do anything else that rendering a single service call.<br />
+The problem is that our current precarious polling system relies on <code>ContentView.refreshData</code> to call itself at the end and when it fails it doesn't retry as we are not currently handling the error cases.<br />
+Let's take a look at it:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">private func </span><span style="color:#bf616a;">refreshData</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#ebcb8b;">Service</span><span style="color:#c0c5ce;">.getSystemState()
+        .</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onSuccess</span><span style="color:#c0c5ce;">: { globalState </span><span style="color:#b48ead;">in
+            self</span><span style="color:#c0c5ce;">.globalState = globalState
+            </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.refreshData()
+        })
+        .</span><span style="color:#d08770;">disposed</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">by</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.disposeBag)
+}
+</span></pre>
+<p>The subscribe method has another argument that we are currently ignoring in our naive usage of the reactive API, <code>onError</code>, let's use it:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#ebcb8b;">Service</span><span style="color:#c0c5ce;">.systemSingle
+    .</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onSuccess</span><span style="color:#c0c5ce;">: { globalState </span><span style="color:#b48ead;">in
+        self</span><span style="color:#c0c5ce;">.globalState = globalState
+        </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.refreshData()
+    }, </span><span style="color:#bf616a;">onError</span><span style="color:#c0c5ce;">: { </span><span style="color:#d08770;">_ </span><span style="color:#b48ead;">in
+        self</span><span style="color:#c0c5ce;">.refreshData()
+    })
+    .</span><span style="color:#d08770;">disposed</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">by</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.disposeBag)
+</span></pre>
+<p>Now if you run the application it will look nice as before even if every other request fails, furthermore we have a nice separation between the happy path and the sad path. As a reminder we have other <code>subscribe</code> options that were discussed on the previous post <a href="/post-001#subscribe_section">here</a>.</p>
+<p>Now it seems we have covered the &quot;handle errors gracefully&quot; section, <strong>spoiler alert</strong>, we haven't, what we won't notice until a little later in the post.
+ <br />
+ </p>
+<table><thead><tr><th></th></tr></thead><tbody>
+</tbody></table>
+<h3 id="intermission">Intermission</h3>
+<p><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#skip_intermission">Skip intermission</a><br />
+Before continuing talking about logging and testability there is something I would like to show you, on the previous post I mentioned that we can re-use the same single multiple times (<a href="/post-001#multiple">here</a>), so why use a method? why are we re-creating the same Instance over an over again? I mean is not like is a huge performance boost, plus &quot;<em>[…] premature optimization is the root of all evil (or at least most of it) in programming.</em>&quot;<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#5">5</a></sup> Donald Knuth.<br />
+Still this is the right thing to do plus 0.001% over time compounds and 🦆 our application's performance.<br />
+What we can do is to use a static variable we only creates once:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">static var </span><span style="color:#bf616a;">systemSingle</span><span style="color:#c0c5ce;">: </span><span style="color:#ebcb8b;">Single</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#ebcb8b;">GlobalState</span><span style="color:#c0c5ce;">&gt; = {
+    </span><span style="color:#ebcb8b;">Single</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#ebcb8b;">GlobalState</span><span style="color:#c0c5ce;">&gt;.</span><span style="color:#d08770;">create</span><span style="color:#c0c5ce;"> { single </span><span style="color:#b48ead;">in
+    	</span><span style="color:#65737e;">// Body
+        </span><span style="color:#b48ead;">return </span><span style="color:#ebcb8b;">Disposables</span><span style="color:#c0c5ce;">.create()
+    }
+}()
+</span></pre>
+<p>That we can reuse directly:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">private func </span><span style="color:#bf616a;">refreshData</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#ebcb8b;">Service</span><span style="color:#c0c5ce;">.systemSingle
+        .</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onSuccess</span><span style="color:#c0c5ce;">: { globalState </span><span style="color:#b48ead;">in
+            </span><span style="color:#65737e;">// Body
+</span><span style="color:#c0c5ce;">        )
+        .</span><span style="color:#d08770;">disposed</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">by</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.disposeBag)
+}
+</span></pre>
+<p>If you don't believe me (I don't blame you, and you shouldn't to be honest) you can try it yourself and add a print line here (and also a <code>return</code>)</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">static var </span><span style="color:#bf616a;">systemSingle</span><span style="color:#c0c5ce;">: </span><span style="color:#ebcb8b;">Single</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#ebcb8b;">GlobalState</span><span style="color:#c0c5ce;">&gt; = {
+	print(</span><span style="color:#a3be8c;">&quot;Creating the single one single time.&quot;</span><span style="color:#c0c5ce;">)
+    </span><span style="color:#b48ead;">return </span><span style="color:#ebcb8b;">Single</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#ebcb8b;">GlobalState</span><span style="color:#c0c5ce;">&gt;.</span><span style="color:#d08770;">create</span><span style="color:#c0c5ce;"> { single </span><span style="color:#b48ead;">in
+</span></pre>
+<p>Now the app works just as before and we just gained little performance boost… maybe?.</p>
+<p>Now back to our regular programing...
+ <br />
+ </p>
+<table><thead><tr><th></th></tr></thead><tbody>
+</tbody></table>
+<h4 id="skip_intermission">Handle errors, Log errors.</h4>
+<p>Let's log some errors on the client, for simplicity our logs will be just printing to the console AKA &quot;poor man's debugger&quot;.<br />
+An straight forward change could be:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#bf616a;">onError</span><span style="color:#c0c5ce;">: { error </span><span style="color:#b48ead;">in</span><span style="color:#c0c5ce;">
+    print(</span><span style="color:#a3be8c;">&quot;[</span><span style="color:#ab7967;">\(</span><span style="color:#c0c5ce;">#function</span><span style="color:#ab7967;">)</span><span style="color:#a3be8c;">] ❌ request error: </span><span style="color:#ab7967;">\(</span><span style="color:#c0c5ce;">error</span><span style="color:#ab7967;">)</span><span style="color:#a3be8c;">&quot;</span><span style="color:#c0c5ce;">)
+    </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.refreshData()
+})
+</span></pre>
+<p>Right now this feels like enough as we only use the endpoint in a single place, but it would be good to have the logging at the endpoint level too, then we can see how often and endpoint fails and also if we use it in different parts of our app which one is more affected.</p>
+<p>We might be tempted to modify the body of our single and log the error in the same place where we are creating it:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#ebcb8b;">FakeServices</span><span style="color:#c0c5ce;">.shared.getSystemState { globalState </span><span style="color:#b48ead;">in
+    if let</span><span style="color:#c0c5ce;"> globalState = globalState {
+        single(.</span><span style="color:#d08770;">success</span><span style="color:#c0c5ce;">(globalState))
+    } </span><span style="color:#b48ead;">else</span><span style="color:#c0c5ce;"> {
+    	</span><span style="color:#65737e;">// Not good enough 
+    	</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> error = </span><span style="color:#ebcb8b;">GetSystemStateError</span><span style="color:#c0c5ce;">.unknown
+    	print(</span><span style="color:#a3be8c;">&quot;[</span><span style="color:#ab7967;">\(</span><span style="color:#c0c5ce;">#function</span><span style="color:#ab7967;">)</span><span style="color:#a3be8c;">] ❌ request error: </span><span style="color:#ab7967;">\(</span><span style="color:#c0c5ce;">error</span><span style="color:#ab7967;">)</span><span style="color:#a3be8c;">&quot;</span><span style="color:#c0c5ce;">)
+        single(.</span><span style="color:#d08770;">error</span><span style="color:#c0c5ce;">(error))
+    }
+}
+</span></pre>
+<p>But there is a better way, the RxWay. All observables have a very useful operator called <a href="https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L157-L170">do</a>, and this one is a big one:</p>
+<blockquote>
+<p>Invokes an action for each event in the observable sequence, and propagates all observer messages through the result sequence.</p>
+<p>seealso: <a href="http://reactivex.io/documentation/operators/do.html">do operator on reactivex.io</a></p>
+<p>· <strong>onSuccess</strong>: Action to invoke for each element in the observable sequence.<br />
+· <strong>afterSuccess</strong>: Action to invoke for each element after the observable has passed an onNext event along to its downstream.<br />
+· <strong>onError</strong>: Action to invoke upon errored termination of the observable sequence.<br />
+· <strong>afterError</strong>: Action to invoke after errored termination of the observable sequence.<br />
+· <strong>onSubscribe</strong>: Action to invoke before subscribing to source observable sequence.<br />
+· <strong>onSubscribed</strong>: Action to invoke after subscribing to source observable sequence.<br />
+· <strong>onDispose</strong>: Action to invoke after subscription to source observable has been disposed for any reason. It can be either because sequence terminates for some reason or observer subscription being disposed.</p>
+<p><strong>returns</strong>: The source sequence with the side-effecting behavior applied.</p>
+</blockquote>
+<p>This operator should not be confused with <a href="https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L203-L208">map</a> or any of it's variants as this method does not modifies the stream in any way, that's what &quot;<em>[…]and propagates all observer messages through the result sequence</em>&quot; means. Also as you can see it has a lot of options to &quot;hook into&quot;, this makes <a href="https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L157-L170">do</a> great for logging and also debugging your code, by the way there is a <a href="https://github.com/ReactiveX/RxSwift/blob/6b2a406b928cc7970874dcaed0ab18e7265e41ef/RxSwift/Observables/Debug.swift#L23">debug</a> operator as well.</p>
+<p>Now we can add this at the end of our Single definition and we will be effortlessly &quot;logging&quot; all results from it no matter where we use it.</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#c0c5ce;">.</span><span style="color:#d08770;">do</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onSuccess</span><span style="color:#c0c5ce;">: { </span><span style="color:#d08770;">_ </span><span style="color:#b48ead;">in</span><span style="color:#c0c5ce;">
+    print(</span><span style="color:#a3be8c;">&quot;[</span><span style="color:#ab7967;">\(</span><span style="color:#c0c5ce;">#function</span><span style="color:#ab7967;">)</span><span style="color:#a3be8c;">] ✅ Success&quot;</span><span style="color:#c0c5ce;">)
+}, </span><span style="color:#bf616a;">onError</span><span style="color:#c0c5ce;">: { error </span><span style="color:#b48ead;">in</span><span style="color:#c0c5ce;">
+    print(</span><span style="color:#a3be8c;">&quot;[</span><span style="color:#ab7967;">\(</span><span style="color:#c0c5ce;">#function</span><span style="color:#ab7967;">)</span><span style="color:#a3be8c;">] ❌ request error: </span><span style="color:#ab7967;">\(</span><span style="color:#c0c5ce;">error</span><span style="color:#ab7967;">)</span><span style="color:#a3be8c;">&quot;</span><span style="color:#c0c5ce;">)
+})
+</span></pre>
+<p>This is the output of the console now:</p>
+<blockquote>
+<p>[Service] ✅ Success<br />
+[Service] ❌ request error: unknown<br />
+[refreshData()] ❌ request error: unknown<br />
+[Service] ✅ Success<br />
+[Service] ❌ request error: unknown<br />
+[refreshData()] ❌ request error: unknown<br />
+[Service] ✅ Success<br />
+[Service] ❌ request error: unknown<br />
+[refreshData()] ❌ request error: unknown</p>
+</blockquote>
+<p>We can also go back to <code>ContentView</code> and add a <a href="https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L157-L170">do</a> there so we can separate logging from business logic like this:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">private func </span><span style="color:#bf616a;">refreshData</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#ebcb8b;">Service</span><span style="color:#c0c5ce;">.systemSingle
+➡️      .</span><span style="color:#d08770;">do</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onError</span><span style="color:#c0c5ce;">: { error </span><span style="color:#b48ead;">in</span><span style="color:#c0c5ce;">
+➡️          print(</span><span style="color:#a3be8c;">&quot;[</span><span style="color:#ab7967;">\(</span><span style="color:#c0c5ce;">#function</span><span style="color:#ab7967;">)</span><span style="color:#a3be8c;">] ❌ request error: </span><span style="color:#ab7967;">\(</span><span style="color:#c0c5ce;">error</span><span style="color:#ab7967;">)</span><span style="color:#a3be8c;">&quot;</span><span style="color:#c0c5ce;">)
+➡️      })                                                    
+        .</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onSuccess</span><span style="color:#c0c5ce;">: { globalState </span><span style="color:#b48ead;">in
+            self</span><span style="color:#c0c5ce;">.globalState = globalState
+            </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.refreshData()
+        }, </span><span style="color:#bf616a;">onError</span><span style="color:#c0c5ce;">: { error </span><span style="color:#b48ead;">in
+            self</span><span style="color:#c0c5ce;">.refreshData()
+        })
+        .</span><span style="color:#d08770;">disposed</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">by</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.disposeBag)
+}
+</span></pre>
+<p>If we found ourselves writing the same <a href="https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L157-L170">do</a> to log over and over again we might as well extend <code>PrimitiveSequenceType</code> and add our on log function, so our call site looks cleaner:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">private func </span><span style="color:#bf616a;">refreshData</span><span style="color:#c0c5ce;">() {
+    </span><span style="color:#ebcb8b;">Service</span><span style="color:#c0c5ce;">.systemSingle
+➡️      .</span><span style="color:#d08770;">logErrors</span><span style="color:#c0c5ce;">()
+        .</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onSuccess</span><span style="color:#c0c5ce;">: { globalState </span><span style="color:#b48ead;">in
+            self</span><span style="color:#c0c5ce;">.globalState = globalState
+            </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.refreshData()
+        }, </span><span style="color:#bf616a;">onError</span><span style="color:#c0c5ce;">: { error </span><span style="color:#b48ead;">in
+            self</span><span style="color:#c0c5ce;">.refreshData()
+        })
+        .</span><span style="color:#d08770;">disposed</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">by</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.disposeBag)
+}
+</span></pre>
+<p>That's up to you, I won't do it in order to keep the code as vanilla as possible to avoid confusions.<br />
+And with that we so how easy is too add logs to our code while still keeping some separation between business logic and logs / analytics.</p>
+<p> <br />
+ </p>
+<table><thead><tr><th></th></tr></thead><tbody>
+</tbody></table>
+<h4 id="introduces-new-unit-tests">Introduces new unit tests</h4>
+<p>It's time to add some unit tests, the question now is &quot;<em>What should we test?</em>&quot; As many tests we write the better, but writing tests just for the sake of it is not good.<br />
+Anyway, let's check the changes we introduced and what should we test. I personally like to use the tests to document my assumptions, so if at any time one of those assumptions change the test will warn all of us that something might break, you have the draw the line somewhere though, for example I'm going to assume that RxSwift is stable and tested enough so I don't have to verify stuff like a <a href="https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L157-L170">do</a> always propagates events down the line.</p>
+<p>We haven't made to many changes though, we removed the requirement of the optional (the compiler takes care of ensuring that) and introduced a new error, but our logic doesn't even care what kind of error we get, so can we say that there isn't anything worth testing?<br />
+Let's look closer, we did make an assumption, and a big one, we are assuming that the single will always send back an event, either an element or an error.<br />
+Someone could by mistake remove the line that emits the error:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#ebcb8b;">FakeServices</span><span style="color:#c0c5ce;">.shared.getSystemState { globalState </span><span style="color:#b48ead;">in
+    if let</span><span style="color:#c0c5ce;"> globalState = globalState {
+        single(.</span><span style="color:#d08770;">success</span><span style="color:#c0c5ce;">(globalState))
+    } </span><span style="color:#b48ead;">else</span><span style="color:#c0c5ce;"> {
+➡️      single(.</span><span style="color:#d08770;">error</span><span style="color:#c0c5ce;">(</span><span style="color:#ebcb8b;">GetSystemStateError</span><span style="color:#c0c5ce;">.unknown))
+    }
+}
+</span></pre>
+<p>No, I'm not being <strong>too</strong> far fetched or pessimist, you think it is impossible for someone to come and remove that very important line, well in this context it seems highly unlikely given the simplicity of the program, but even on the most simple logics someone making a big refactor and solving a rebase with lots conflicts might get confused and solve it the wrong way, it can happen (I have seen it MANY times) and if this situation happens it would be terrible as neither of the logs we have will catch it.</p>
+<p>So first things first, we need to create a new target on the project for our tests, you can google that out but here is a simple recap:</p>
+<ol>
+<li>Select the project on the file navigator tab.</li>
+<li>Click the + button to add a new target.</li>
+<li>Select the unit test template (The default values are more than fine).</li>
+</ol>
+<div align="center"><img src="../002_step_1.png" alt="The project on the file navigator tab" height="115" width="216" style="margin:16px"><img src="../002_step_2.png" alt="The + button to add new targets"  height="115" width="167" style="margin:16px"><img src="../002_step_3.png" alt="The unit test option"  height="115" width="140" style="margin:16px"></div>
+<p>Now find the <code>RxPlayingTests.swift</code> file, get ride of the <code>testPerformanceExample</code> function as we won't use it and rename <code>testExample</code> to something more representative, but remember it has to always be prefixed with the word <code>test</code>, take no arguments and return void<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#6">6</a></sup>. I'm very bad at naming things (Take the blog or the fake company as good examples) but a convention is <code>what-is-being-tested</code>+<code>the-state-change</code>+<code>expected-value</code> so maybe <code>testSystemSingleWhenFailsReturnsError</code> is a suitable name.</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">func </span><span style="color:#bf616a;">testSystemSingleWhenFailsReturnsError</span><span style="color:#c0c5ce;">() </span><span style="color:#b48ead;">throws</span><span style="color:#c0c5ce;"> {
+    </span><span style="color:#65737e;">// This is an example of a functional test case.
+    // Use XCTAssert and related functions to verify your tests produce the correct results.
+</span><span style="color:#c0c5ce;">}
+</span></pre>
+<p>And now what?</p>
+<p>First let's import the Target we want to test with the <code>@testable</code> attribute<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#7">7</a></sup> so we have access to it's internal members and also the FakeService module as we will use it.</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">@testable import </span><span style="color:#ebcb8b;">RxPlaying
+</span><span style="color:#b48ead;">import </span><span style="color:#ebcb8b;">FakeService
+</span></pre>
+<p>In real life we would need to introduce some dependency injection mechanism so we can switch the FakeService with a MockService we can control and force it to return <code>nil</code> on demand and avoid making network calls, unit tests that makes network calls are not unit tests, no matter what arguments you use they are all wrong to me. Luckily to us FakeService comes with mocking mechanism (is a Mock of a service after all).</p>
+<p>So let's setup our tests on <code>setUpWithError</code> by setting the delay to <code>0</code> as that's something we want for all our tests.</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">override func </span><span style="color:#bf616a;">setUpWithError</span><span style="color:#c0c5ce;">() </span><span style="color:#b48ead;">throws</span><span style="color:#c0c5ce;"> {
+    </span><span style="color:#ebcb8b;">FakeService</span><span style="color:#c0c5ce;">.</span><span style="color:#ebcb8b;">Current</span><span style="color:#c0c5ce;">.delay =  { </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;"> }
+}
+</span></pre>
+<p>And let's make all request fail at the beginning of our test since that's the condition we want to test</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">func </span><span style="color:#bf616a;">testSystemSingleWhenFailsReturnsError</span><span style="color:#c0c5ce;">() </span><span style="color:#b48ead;">throws</span><span style="color:#c0c5ce;"> {
+    </span><span style="color:#ebcb8b;">FakeService</span><span style="color:#c0c5ce;">.</span><span style="color:#ebcb8b;">Current</span><span style="color:#c0c5ce;">.failNext = { </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;"> }
+
+}
+</span></pre>
+<p>Now we are ready to test, we need to subscribe to <code>Service.systemSingle</code>, as we are only interested in testing if we get an error we select the version of subscribe that has <code>onSuccess:onError:</code>, (You can refresh this topic <a href="/post-001#subscribe_section">here</a>)<br />
+Again we are only interested in the error so we can ignore the <code>onSuccess:</code>.<br />
+If on error gets call then the test passes, we trigger that with <code>XCTAssert(true)</code>.</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#ebcb8b;">Service</span><span style="color:#c0c5ce;">.systemSingle
+    .</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onError</span><span style="color:#c0c5ce;">: { </span><span style="color:#d08770;">_ </span><span style="color:#b48ead;">in
+        </span><span style="color:#ebcb8b;">XCTAssert</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;">) </span><span style="color:#65737e;">// If we hit this line we are good!
+</span><span style="color:#c0c5ce;">})
+</span></pre>
+<p>If you run your test it passes! 🎉 So are we done?</p>
+<p><strong>No</strong></p>
+<p>Rule number #1 when writing tests is &quot;<em>Tests that your tests fail.</em>&quot;<br />
+Test are build to fail and you HAVE to make sure they fail at least when you expect them to fail, otherwise the test is pointless. (Also that code if you are following the post on your Xcode that code is emitting warnings, so there is something fishy with it to say the least)
+Let's change the <code>failNext</code> closure so requests don't fail, that should make the test fail.</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#ebcb8b;">FakeService</span><span style="color:#c0c5ce;">.</span><span style="color:#ebcb8b;">Current</span><span style="color:#c0c5ce;">.failNext = { </span><span style="color:#d08770;">false</span><span style="color:#c0c5ce;"> }
+</span></pre>
+<p>But if we run the test again it won't fail.</p>
+<p>You can play putting breakpoints and check that when <code>failNext</code> is set to <code>true</code> our <code>XCTAssert(true)</code> is indeed executed but when <code>failNext</code> is set to <code>false</code> it is not, so why is the test passing? Easy, if it doesn't fail it passes, test are intended to check for failure conditions, that's why we have <code>XCTFail()</code> but not <code>XCTSuccess()</code> method.</p>
+<p>One could be tempted to change the test to this so you can indeed test the failure scenarios:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#ebcb8b;">Service</span><span style="color:#c0c5ce;">.systemSingle
+    .</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onSuccess</span><span style="color:#c0c5ce;">: { </span><span style="color:#d08770;">_ </span><span style="color:#b48ead;">in </span><span style="color:#ebcb8b;">XCTFail</span><span style="color:#c0c5ce;">() })
+</span></pre>
+<p>And if you are lucky enough your test may pass, but it won't always, there is a race condition and you might end up with and exception &quot;<em>Parameter &quot;test&quot; must not be nil.</em>&quot; which basically happens when a test fails after it had finished running.<br />
+The nature of the system we are testing is asynchronous and we should test it properly, for that we will use expectations<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#8">8</a></sup>.<br />
+Expectations are easy to use, you create one, on an asynchronous task you set it to &quot;fulfilled&quot;, and then you &quot;pause&quot; the execution of the test using a <a href="https://developer.apple.com/documentation/xctest/xctwaiter">XCTWaiter</a> and a timeout, if the expectation is not fulfilled before the time passes the test fail.<br />
+As <code>XCTestCase</code> conforms to the <a href="https://developer.apple.com/documentation/xctest/xctwaiterdelegate">XCTWaiterDelegate</a> we can just do <code>self.wait</code>.<br />
+Here is the code:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">func </span><span style="color:#bf616a;">testSystemSingleWhenFailsReturnsError</span><span style="color:#c0c5ce;">() </span><span style="color:#b48ead;">throws</span><span style="color:#c0c5ce;"> {
+</span><span style="color:#c0c5ce;">   </span><span style="color:#ebcb8b;">FakeService</span><span style="color:#c0c5ce;">.</span><span style="color:#ebcb8b;">Current</span><span style="color:#c0c5ce;">.failNext = { </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;"> }
+</span><span style="color:#c0c5ce;">   
+</span><span style="color:#c0c5ce;">   </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> expectation = </span><span style="color:#ebcb8b;">XCTestExpectation</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">description</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">&quot;We get an error if the request fails&quot;</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">   
+</span><span style="color:#c0c5ce;">   </span><span style="color:#ebcb8b;">Service</span><span style="color:#c0c5ce;">.systemSingle
+</span><span style="color:#c0c5ce;">       .</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onError</span><span style="color:#c0c5ce;">: { </span><span style="color:#d08770;">_ </span><span style="color:#b48ead;">in
+</span><span style="color:#c0c5ce;">           expectation.fulfill()
+</span><span style="color:#c0c5ce;">       })
+</span><span style="color:#c0c5ce;">   
+</span><span style="color:#c0c5ce;">   </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.wait(</span><span style="color:#b48ead;">for</span><span style="color:#c0c5ce;">: [expectation], </span><span style="color:#bf616a;">timeout</span><span style="color:#c0c5ce;">: </span><span style="color:#d08770;">0.1</span><span style="color:#c0c5ce;">)
+}
+</span></pre>
+<p>If you run the test it will pass, and if you flip the value of <code>failNext</code> it fails with a glorious: <code>_Asynchronous wait failed: Exceeded timeout of 0.1 seconds, with unfulfilled expectations: &quot;We get an error if the request fails&quot;._</code></p>
+<p>Let's improve the test a little, first let's get ride of the warning by creating a dispose bag and retaining the returned value of <code>susbcribe</code>. In this case we can do it locally as the <code>wait</code> will hold the execution and the current scope won't end before time disposing of our bag and it's content.</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">func </span><span style="color:#bf616a;">testSystemSingleWhenFailsReturnsError</span><span style="color:#c0c5ce;">() </span><span style="color:#b48ead;">throws</span><span style="color:#c0c5ce;"> {
+</span><span style="color:#c0c5ce;">   </span><span style="color:#ebcb8b;">FakeService</span><span style="color:#c0c5ce;">.</span><span style="color:#ebcb8b;">Current</span><span style="color:#c0c5ce;">.failNext = { </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;"> }
+</span><span style="color:#c0c5ce;">   
+</span><span style="color:#c0c5ce;">   </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> expectation = </span><span style="color:#ebcb8b;">XCTestExpectation</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">description</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">&quot;We get an error if the request fails&quot;</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">   
+</span><span style="color:#c0c5ce;">   </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> disposeBag = </span><span style="color:#ebcb8b;">Service</span><span style="color:#c0c5ce;">.systemSingle
+</span><span style="color:#c0c5ce;">       .</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onError</span><span style="color:#c0c5ce;">: { </span><span style="color:#d08770;">_ </span><span style="color:#b48ead;">in
+</span><span style="color:#c0c5ce;">           expectation.fulfill()
+</span><span style="color:#c0c5ce;">       })
+</span><span style="color:#c0c5ce;">   
+</span><span style="color:#c0c5ce;">   </span><span style="color:#b48ead;">self</span><span style="color:#c0c5ce;">.wait(</span><span style="color:#b48ead;">for</span><span style="color:#c0c5ce;">: [expectation], </span><span style="color:#bf616a;">timeout</span><span style="color:#c0c5ce;">: </span><span style="color:#d08770;">0.1</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">   disposeBag.dispose()
+}
+</span></pre>
+<p>Also, it is a good idea to &quot;fail fast&quot;, it doesn't look like much but if this test fails, it fails after 0.1 second, if you have 10 tests failing that's at least 1 second of extra delay, if you have hundreds, the test suit could be delayed a lot when there is a change breaking multiple tests and running CI costs money baby.<br />
+So let's also fail fast by failing if the <code>onSuccess:</code> closure ever gets hit.</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#c0c5ce;">.</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onSuccess</span><span style="color:#c0c5ce;">: { </span><span style="color:#d08770;">_ </span><span style="color:#b48ead;">in
+</span><span style="color:#c0c5ce;">   </span><span style="color:#ebcb8b;">XCTFail</span><span style="color:#c0c5ce;">()
+}, </span><span style="color:#bf616a;">onError</span><span style="color:#c0c5ce;">: { </span><span style="color:#d08770;">_ </span><span style="color:#b48ead;">in
+</span><span style="color:#c0c5ce;">   expectation.fulfill()
+})
+</span></pre>
+<p>But if you followed my advice and verified that the test fails when it should you would have noticed it failed because of the time up, not because of the timeout and not because of the <code>XCTFail()</code> even when that lines get hit (go on put a breakpoint and try), that's because there is something <em>not</em> right with <code>XCTestCase</code> so we should use <a href="https://developer.apple.com/documentation/xctest/xctwaiter">XCTWaiter</a> directly, now the final version of the test looks like this:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#b48ead;">func </span><span style="color:#bf616a;">testSystemSingleWhenFailsReturnsError</span><span style="color:#c0c5ce;">() </span><span style="color:#b48ead;">throws</span><span style="color:#c0c5ce;"> {
+    </span><span style="color:#ebcb8b;">FakeService</span><span style="color:#c0c5ce;">.</span><span style="color:#ebcb8b;">Current</span><span style="color:#c0c5ce;">.failNext = { </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;"> }
+    
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> expectation = </span><span style="color:#ebcb8b;">XCTestExpectation</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">description</span><span style="color:#c0c5ce;">: </span><span style="color:#a3be8c;">&quot;We get an error if the request fails&quot;</span><span style="color:#c0c5ce;">)
+    
+    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> disposeBag = </span><span style="color:#ebcb8b;">Service</span><span style="color:#c0c5ce;">.systemSingle
+        .</span><span style="color:#d08770;">subscribe</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">onSuccess</span><span style="color:#c0c5ce;">: { </span><span style="color:#d08770;">_ </span><span style="color:#b48ead;">in
+            </span><span style="color:#ebcb8b;">XCTFail</span><span style="color:#c0c5ce;">(</span><span style="color:#a3be8c;">&quot;We shouldn&#39;t get a result&quot;</span><span style="color:#c0c5ce;">)
+        }, </span><span style="color:#bf616a;">onError</span><span style="color:#c0c5ce;">: { </span><span style="color:#d08770;">_ </span><span style="color:#b48ead;">in</span><span style="color:#c0c5ce;">
+            expectation.fulfill()
+        })
+    
+    </span><span style="color:#ebcb8b;">XCTAssertEqual</span><span style="color:#c0c5ce;">(</span><span style="color:#ebcb8b;">XCTWaiter</span><span style="color:#c0c5ce;">.wait(</span><span style="color:#b48ead;">for</span><span style="color:#c0c5ce;">: [expectation], </span><span style="color:#bf616a;">timeout</span><span style="color:#c0c5ce;">: </span><span style="color:#d08770;">0.1</span><span style="color:#c0c5ce;">), .</span><span style="color:#d08770;">completed</span><span style="color:#c0c5ce;">)
+    disposeBag.dispose()
+}
+</span></pre>
+<p>And it fails when we expect it to fail even if we comment out the following line in <code>Service.swift</code>:</p>
+<pre style="background-color:#2b303b;">
+<span style="color:#c0c5ce;">single(.</span><span style="color:#d08770;">error</span><span style="color:#c0c5ce;">(</span><span style="color:#ebcb8b;">GetSystemStateError</span><span style="color:#c0c5ce;">.unknown))
+</span></pre>
+<p>Now the PR is ready and we should send around so people can comment that <code>{</code> should go in a different line or that our test should have a different name<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#2">2</a></sup> 🤣</p>
+<p>And remember, if you don't want people nitpicking your PRs just make one with over 100 lines of codes, nobody really review those… Just kidding don't be an a*shole, your coworkers know where you sit.</p>
+<p> <br />
+ </p>
+<table><thead><tr><th></th></tr></thead><tbody>
+</tbody></table>
+<h1 id="conclusion">Conclusion</h1>
+<p>I hope now you start to see the value of RxSwift over a more simple closure based approach, like how easy is to keep the business logic separated from logging and analytics code or the capacity of the operator <a href="https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L157-L170">do</a> to chain actions on our stream of events in one or many places along that is more elegant than nesting closures one inside the other. </p>
+<p>Also as you can see testing RxSwift is not that bad (in this easy example 😉)</p>
+<p>Even something so simple as a <a href="https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single">Single</a> comes with a lot of operators, we will see more on the next post, because before you could get your PR merged the worse will happen, a feature request will in the form of &quot;<em>since you are touching that part of the app, would you mind making a small change for me?</em>&quot;<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#2">2</a></sup> Spoiler alert is not fixing a typo.</p>
+<p>Yes, that's a cliff hanger.</p>
+<p> <br />
+ </p>
+<table><thead><tr><th></th></tr></thead><tbody>
+</tbody></table>
+<h5 id="footnotes">Footnotes</h5>
+<p><a id='1'>1</a>: <a href="https://en.wikipedia.org/wiki/Agile_software_development">Wikipedia.org</a> Agile software development.<br />
+<a id='2'>2</a>: If this story hits close to home, please accept my condolences.<br />
+<a id='3'>3</a>: <a href="https://nvie.com/posts/a-successful-git-branching-model/">Nvie.com</a> &quot;<em>A successful Git branching model</em>&quot; By Vincent Driessen.<br />
+<a id='4'>4</a>: <a href="https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests">Help.github.com</a> &quot;<em>About pull requests</em>&quot;.<br />
+<a id='5'>5</a>: <a href="https://en.wikiquote.org/wiki/Donald_Knuth">Wikiquote.org</a> Donald Knuth.<br />
+<a id='6'>6</a>: <a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/04-writing_tests.html#//apple_ref/doc/uid/TP40014132-CH4-SW38">Developer.apple.com</a> Writing Test Methods.<br />
+<a id='7'>7</a>: <a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/04-writing_tests.html#//apple_ref/doc/uid/TP40014132-CH4-SW11">Developer.apple.com</a> Writing Tests with Swift.<br />
+<a id='8'>8</a>: <a href="https://developer.apple.com/documentation/xctest/asynchronous_tests_and_expectations/testing_asynchronous_operations_with_expectations">Developer.apple.com</a> Testing Asynchronous Operations with Expectations.  </p>
+
+                            </div>
+                        </div>
+                        
+                        
+<footer class="card-footer">
+    <div class="article-footer">
+        <div class="columns is-multiline">
+            <div class="column is-12">
+                <p>
+                    Published
+                    
+
+<time datetime="2020-03-15">
+    2020-03-15
+</time>
+
+
+                    
+
+
+                    
+
+
+                    
+
+
+                </p>
+            </div>
+            <div class="column">
+                <a class="button is-pulled-right is-info" href="/playing-with-rxswift">Back Home</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+                        
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+</main>
+
+    
+    
+
+<footer class="footer js-only">
+    <div class="columns">
+        <div class="column">
+            <div class="content is-flex">
+                <div class="theme-select-container">
+                    Theme:
+                    <select id="theme-select">
+                        
+                        
+                        
+                        
+                        
+                        <option value="default">default</option>
+                        
+                        
+                        
+                        
+                        
+                        
+                        <option selected="selected" value="darkly">darkly</option>
+                        
+                        
+                        
+                        
+                        
+                        
+                        <option value="flatly">flatly</option>
+                        
+                        
+                        
+                        
+                        
+                        
+                        <option value="pulse">pulse</option>
+                        
+                        
+                        
+                        
+                        
+                        
+                        <option value="simplex">simplex</option>
+                        
+                        
+                        
+                        
+                        
+                        
+                        <option value="lux">lux</option>
+                        
+                        
+                        
+                        
+                        
+                        
+                        <option value="slate">slate</option>
+                        
+                        
+                        
+                        
+                        
+                        
+                        <option value="solar">solar</option>
+                        
+                        
+                        
+                        
+                        
+                        
+                        <option value="superhero">superhero</option>
+                        
+                        
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    
+
+    <script type="text/javascript" src="https:&#x2F;&#x2F;julioacarrettoni.github.io&#x2F;playing-with-rxswift&#x2F;js&#x2F;zulma_navbar.js"></script>
+
+    
+    <script type="text/javascript" src="https:&#x2F;&#x2F;julioacarrettoni.github.io&#x2F;playing-with-rxswift&#x2F;js&#x2F;zulma_search.js"></script>
+    
+
+    
+</body>
+
+</html>
