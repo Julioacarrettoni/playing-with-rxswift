@@ -11,7 +11,7 @@ Thomson Brothers Division might be a medium company with some old technological 
 For example, they do Agile software development<sup>[1](#1)</sup>. Probably someone read a fancy post on LinkedIn selling Agile facilitation consulting and though: "_This looks nice, and I don't need to pay someone to tell me how to run my team. I'll simply follow the first 3 chapters of this book, most of it doesn't apply to us anyway_" <sup>[2](#2)</sup>. And just like that, "_Agile TBD development process_" was born (pun intended).  
 They should have hired the consultant. It would have been cheaper in the long run…  
 
-Anyway, as a result to that, one thing led to another, and the company ended up adopting and _adapting_ _"git flow"_<sup>[3](#3)</sup>, so now you have to create a "_pull request_"<sup>[3](#3)</sup> into the master branch from your refactor branch.  
+Anyway, as a result to that, one thing led to another, and the company ended up adopting and _adapting_ _"git flow"_<sup>[3](#3)</sup>, so now you have to create a "_pull request_"<sup>[4](#4)</sup> into the master branch from your refactor branch.  
 By following the company docs, you have to complete a checklist in the description of your pull request, some of which are:
 - Considers edge cases and non-happy paths
 - Handle errors
