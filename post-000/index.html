@@ -136,20 +136,20 @@ The best answer for that is <a href="https://github.com/ReactiveX/RxSwift/blob/m
 <table><thead><tr><th></th></tr></thead><tbody>
 </tbody></table>
 <h1 id="motivation">Motivation</h1>
-<p>I find myself learning about new things that can be achieved with RxSwift by reading other people's code, almost never by reading posts about how <code>map</code> or <code>flatMap</code> works.<br />
-Maybe I lack the imagination necessary to translate all those marble diagrams and fake static number generators nobody use into &quot;<em>real world</em>&quot; problems, maybe it just that's not the way I learn, or you know, maybe I haven't tried hard enough.</p>
+<p>I find myself learning about new things that can be achieved with RxSwift by reading other people's code, rarely by reading posts about how <code>map</code> or <code>flatMap</code> works.<br />
+Maybe I lack the imagination necessary to translate all those marble diagrams and fake static number generators nobody use into &quot;<em>real world</em>&quot; problems, perhaps that's not the way I learn, or you know, maybe I haven't tried hard enough.</p>
 <div align="center"><img src="../rxswift_logo.png" alt="RxSwift Logo"></div>
 <p>Anyway, I decided to start tinkering with RxSwift a little more, I googled and asked on twitter (<a href="https://twitter.com/dev_jac/status/1230657972470075392">here</a>), I found the usual books, <a href="https://store.raywenderlich.com/products/rxswift">RxSwift: Reactive Programming with Swift</a>, the usual talks like the ones at <a href="https://academy.realm.io/posts/learning-path-rxswift-from-start-to-finish/">Realm Academy</a> and tutorials which usually cover individual aspects like operators and always using those damn marbles 🙄</p>
-<p>I started hanging around the RxSwift repository reading the <a href="https://github.com/ReactiveX/RxSwift/tree/master/Documentation">docs</a> (they are great) and one thing I found that is invaluable for experimenting is the Swift Playground that comes with the repo (<a href="https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Playgrounds.md">here</a>) this is a tool you should alwasy keep at hand.</p>
-<p>After some time I decided the best way to learn more was to create a dummy app and play with it, but, what kind of app?<br />
-Most of the apps one can build for tinkering are passive, meaning you find a free service that returns some fancy data, like <a href="https://openweathermap.org/api">Open Weather Map</a>, you fetch it and render it nicely, and that's it. What kind of &quot;Reactive&quot; stuff can be built around a bunch of GET HTTP calls that alwasys return the same thing???</p>
+<p>I started hanging around the RxSwift repository reading the <a href="https://github.com/ReactiveX/RxSwift/tree/master/Documentation">docs</a> (they are great), and one thing I found that is invaluable for experimenting is the Swift Playground that comes with the repo (<a href="https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Playgrounds.md">here</a>) this is a tool you should always keep at hand.</p>
+<p>After some time, I decided the best way to learn more was to create a dummy app and play with it, but what kind of app?<br />
+Most of the apps one can build for tinkering are passive, meaning you find a free service that returns some fancy data, like <a href="https://openweathermap.org/api">Open Weather Map</a>, you fetch it and render it nicely, and that's it. What kind of &quot;Reactive&quot; stuff can be built around a bunch of GET HTTP calls that always return the same thing???</p>
 <div align="center"><big>🌤🌥🌦🌨🌩⛈🌪</big></div>
 <p>If you are lucky you might find a nice open API that also includes some POST and PUT HTTP calls (like <a href="https://developers.themoviedb.org/3/account/mark-as-favorite">The Movie Database API</a>) but still, is not very reactive and also kinda limiting if you want to explore other concepts like unit testing or if you want to tinker in a reactive but repetitive way that let you try different approaches for the same situation.</p>
 <p>As I wrote on my <a href="https://twitter.com/dev_jac">twitter bio</a> a long time ago, &quot;<em>If it doesn't exist I'll make it</em>&quot;.</p>
-<p>Initially, I started building it just for myself and it was never intended to be shared so let me warn you, it is going to be rough around the edges… and sometimes on the middle, top, bottom, front and rear too 😅.</p>
-<p>I'm sharing it because in the same way you might <a href="https://en.wikipedia.org/wiki/Rubber_duck_debugging">figure out a bug while explaining it to a rubber duck 🦆</a> explaining something you think you understand to someone else also helps you understand it better yourself.</p>
+<p>Initially, I started building it just for myself and it was never intended to be shared, so let me warn you, it is going to be rough around the edges… and sometimes on the middle, top, bottom, front, and rear too 😅.</p>
+<p>I'm sharing it because, in the same way, you might <a href="https://en.wikipedia.org/wiki/Rubber_duck_debugging">figure out a bug while explaining it to a rubber duck 🦆</a> teaching something you think you understand to someone else also helps you understand it better yourself.</p>
 <p>Also, I thought this whole blogging thing was going to be easier, but so far is torture! ☠️</p>
-<p>Without more preamble let's discuss the technology stack 🥞.</p>
+<p>Without more preamble, let's discuss the technology stack 🥞.</p>
 <table><thead><tr><th></th></tr></thead><tbody>
 </tbody></table>
 <h1 id="technology">Technology</h1>
@@ -161,11 +161,11 @@ Most of the apps one can build for tinkering are passive, meaning you find a fre
 <li>FakeService, a toy Swift framework built for this project.</li>
 </ol>
 <p>RxSwift will be integrated using <a href="https://swift.org/package-manager/">Swift Package manager</a>.<br />
-<strong>FakeService</strong> is be pre-loaded and configured on the sample project.</p>
+<strong>FakeService</strong> is pre-loaded and configured on the sample project.</p>
 <p>The objective of this project is to explore the capabilities of RxSwift and try to build complex/funny contractions with it, SwiftUI and Swift Package manager were chosen because those require less explanation and setup than the alternatives, I believe they are a good fit for this project.<br />
-I'm not advocating for those technologies in particular over their alternatives.</p>
-<p><strong>You shouldn't treat the published code as production-ready nor it is written with best practices in mind, instead brevity and simplicity are prioritized to avoid distracting the reader from the main goal, have fun with RxSwift.</strong></p>
-<p>Every episode has a companion folder on the repo that contains the code as at the beginning (the <code>before</code> folder) and as at the end on the episode (yes, the <code>after</code> folder).</p>
+I'm not advocating for those technologies in particular over other options.</p>
+<p><strong>You shouldn't treat the published code as production-ready, nor it's written with best practices in mind. Instead, brevity and simplicity are prioritized to avoid distracting the reader from the primary goal, have fun with RxSwift.</strong></p>
+<p>Posts have a companion folder in the repo with the code in the initial state (<code>before</code> folder) and how it should look like by the end of it (<code>after</code> folder).</p>
 <table><thead><tr><th></th></tr></thead><tbody>
 </tbody></table>
 <h1 id="a-different-sample-app">A <em>different</em> sample app</h1>
@@ -175,9 +175,9 @@ I'm shipping the source code so you can see it doesn't contain any magic (or goo
 <p>The framework comes with pre-recorded activity, exposes some server look-alike &quot;endpoints&quot;, for simplicity first episodes contain a simpler version of it but more functionality is made available as episodes progress (if I ever publish them that is)</p>
 <h1 id="topics">Topics</h1>
 <p>The main topic of the blog is RxSwift and trying to find ways to leverage it's capabilities while trying not to paint ourselves into a corner.<br />
-Unit testing, testability and debugability will be covered briefly at the end of each post, and in depth on special posts.
-Some details on SwiftUI will also be covered as it is required to build the UI of the sample apps, but it won't be in depth.</p>
-<p>Anyway thank you for reading all this impenetrable wall of text and I hope you enjoy the project, feel free to drop me a comment on twitter.</p>
+Unit testing, testability, and debugability will be covered briefly at the end of each post, and in-depth on special posts.
+Some details on SwiftUI will also be included as it is required to build the UI of the sample apps, but it won't be in-depth.</p>
+<p>Anyway, thank you for reading all this impenetrable wall of text, and I hope you enjoy the project, feel free to drop me a comment on twitter.</p>
 <ul>
 <li><a href="https://twitter.com/dev_jac">@dev_jac</a></li>
 </ul>
