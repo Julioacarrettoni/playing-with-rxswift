@@ -2,28 +2,46 @@ import FakeService
 import Foundation
 import RxSwift
 
-final class Service {
-    static var shared = Service()
-    
-    let globalStateUpdates = PublishSubject<GlobalState?>().asObserver()
-    let disposeBag = DisposeBag()
-    
-    private init() {
-        let ticksPerSecond = 30
-        let referenceDate = Date.init(timeIntervalSinceNow: 0)
-        FakeService.Current.tick = { -referenceDate.timeIntervalSinceNow * Double(ticksPerSecond)}
-        FakeService.Current.delay = { 0 }
-        
-        Observable<Int>.interval(.milliseconds(1000/ticksPerSecond), scheduler: MainScheduler.instance)
-            .subscribe(onNext: {[weak self] _ in
-                self?.refreshGlobalState()
-            })
-            .disposed(by: self.disposeBag)
-    }
-    
-    private func refreshGlobalState() {
-        FakeServices.shared.getSystemState { globalState in
-            self.globalStateUpdates.onNext(globalState)
+enum GetSystemStateError: Error {
+    case unknown
+}
+
+struct Service {
+    static func overrideNetworkMock() {
+        var failures = [false, true]
+        FakeService.Current.failNext = {
+            let next = failures.removeFirst()
+            failures.append(next)
+            return next
         }
     }
+    
+    static var systemSingleV1: Single<GlobalState?> = {
+        Single<GlobalState?>.create { single in
+            FakeServices.shared.getSystemState { globalState in
+                single(.success(globalState))
+            }
+            
+            return Disposables.create()
+        }
+    }()
+    
+    static var systemSingle: Single<GlobalState> = {
+        Single<GlobalState>.create { single in
+            FakeServices.shared.getSystemState { globalState in
+                if let globalState = globalState {
+                    single(.success(globalState))
+                } else {
+                    single(.error(GetSystemStateError.unknown))
+                }
+            }
+            
+            return Disposables.create()
+        }
+        .do(onSuccess: { _ in
+            print("[\(#function)] ✅ Success")
+        }, onError: { error in
+            print("[\(#function)] ❌ request error: \(error)")
+        })
+    }()
 }

@@ -1,6 +1,6 @@
 import FakeService
-import RxSwift
 import SwiftUI
+import RxSwift
 
 struct ContentView: View {
     @State var globalState: GlobalState? = nil
@@ -9,15 +9,21 @@ struct ContentView: View {
     var body: some View {
         MapView(globalState: self.globalState)
             .edgesIgnoringSafeArea(.all)
-            .onAppear(perform: self.setupAfterAppear)
+            .onAppear(perform: self.refreshData)
     }
     
-    func setupAfterAppear() {
-        Service.shared.globalStateUpdates
-            .subscribe(onNext: { globalState in
-                self.globalState = globalState
+    private func refreshData() {
+        Service.systemSingle
+            .do(onError: { error in
+                print("[\(#function)] ❌ request error: \(error)")
             })
-        .disposed(by: self.disposeBag)
+            .subscribe(onSuccess: { globalState in
+                self.globalState = globalState
+                self.refreshData()
+            }, onError: { error in
+                self.refreshData()
+            })
+            .disposed(by: self.disposeBag)
     }
 }
 

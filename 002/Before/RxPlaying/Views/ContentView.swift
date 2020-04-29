@@ -13,14 +13,9 @@ struct ContentView: View {
     }
     
     private func refreshData() {
-        Service.systemSingle
-            .do(onError: { error in
-                print("[\(#function)] ❌ request error: \(error)")
-            })
+        Service.getSystemState()
             .subscribe(onSuccess: { globalState in
                 self.globalState = globalState
-                self.refreshData()
-            }, onError: { error in
                 self.refreshData()
             })
             .disposed(by: self.disposeBag)
