@@ -16,16 +16,6 @@ struct Service {
         }
     }
     
-    static var systemSingleV1: Single<GlobalState?> = {
-        Single<GlobalState?>.create { single in
-            FakeServices.shared.getSystemState { globalState in
-                single(.success(globalState))
-            }
-            
-            return Disposables.create()
-        }
-    }()
-    
     static var systemSingle: Single<GlobalState> = {
         Single<GlobalState>.create { single in
             FakeServices.shared.getSystemState { globalState in
