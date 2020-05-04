@@ -111,7 +111,7 @@
             </p>
         </a>
         <div class="tags has-addons level-item">
-            <span class="tag is-rounded">2020-03-15</span>
+            <span class="tag is-rounded">2020-04-25</span>
                        
             <span class="tag is-rounded">
 <svg class="i-clock" viewBox="0 0 32 32" width="16" height="16" fill="none" stroke="currentcolor" stroke-linecap="round"
@@ -128,7 +128,7 @@
                             <div itemprop="articleBody" class="content article-body">
                                 <p>Now that the endpoint is wrapped in a <a href="https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single">Single</a> and works nicely on the &quot;happy path&quot;. It's time to start working on handling those error scenarios and add some unit tests to try to catch future bugs before they even happen.</p>
 <p><strong><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#skip_intro">Skip intro</a></strong></p>
-<span id="continue-reading"></span><h1 id="background-story">Background story</h1>
+<span id="continue-reading"></span><h1 id="story">Background story</h1>
 <p>Thomson Brothers Division might be a medium company with some old technological stack, but that doesn't mean they do things wrong. The company has some modern processes in place to ensure a minimum level of code quality.<br />
 For example, they do Agile software development<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#1">1</a></sup>. Probably someone read a fancy post on LinkedIn selling Agile facilitation consulting and though: &quot;<em>This looks nice, and I don't need to pay someone to tell me how to run my team. I'll simply follow the first 3 chapters of this book, most of it doesn't apply to us anyway</em>&quot; <sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#2">2</a></sup>. And just like that, &quot;<em>Agile TBD development process</em>&quot; was born (pun intended).<br />
 They should have hired the consultant. It would have been cheaper in the long run…</p>
@@ -218,7 +218,7 @@ We will see soon that this not only fixes the problem but also enables us to do 
  <br />
  <br />
  </p>
-<h4 id="handle-errors-recover-from-errors-gracefully">Handle errors, recover from errors gracefully</h4>
+<h4 id="pr_req_1">Handle errors, recover from errors gracefully</h4>
 <p>Let's take a look back at our current implementation of the &quot;reactive&quot; endpoint:</p>
 <pre style="background-color:#2b303b;">
 <span style="color:#b48ead;">static func </span><span style="color:#bf616a;">getSystemState</span><span style="color:#c0c5ce;">() -&gt; </span><span style="color:#ebcb8b;">Single</span><span style="color:#c0c5ce;">&lt;</span><span style="color:#ebcb8b;">GlobalState</span><span style="color:#c0c5ce;">?&gt; {
@@ -338,8 +338,9 @@ What we can do is to use a static variable we only create once:</p>
  <br />
  </p>
 <table><thead><tr><th></th></tr></thead><tbody>
+<tr><td><a id='skip_intermission'></a></td></tr>
 </tbody></table>
-<h4 id="skip_intermission">Handle errors, Log errors.</h4>
+<h4 id="pr_req_2">Handle errors, Log errors.</h4>
 <p>Let's log some errors on the client, for simplicity our logs will be just printing to the console AKA &quot;poor man's debugger&quot;.<br />
 An straight forward change could be:</p>
 <pre style="background-color:#2b303b;">
@@ -432,7 +433,7 @@ And with that, we saw how easy it is to add logs to our system while still retai
  </p>
 <table><thead><tr><th></th></tr></thead><tbody>
 </tbody></table>
-<h4 id="introduces-new-unit-tests">Introduces new unit tests</h4>
+<h4 id="pr_req_3">Introduces new unit tests</h4>
 <p>It's time to add some unit tests, the question now is &quot;<em>What should we test?</em>&quot; The more tests we write, the better, but writing tests just for the sake of it is not good.<br />
 Anyway, let's check the changes we introduced and what should we test. I personally like to use the tests to document my assumptions, so if at any time one of those assumptions change the test will warn all of us that something might break, you have the draw the line somewhere though, for example, I'm going to assume that RxSwift is stable and tested enough, so I don't have to verify stuff like a <a href="https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L157-L170">do</a> always propagates events down the line.</p>
 <p>We haven't made to many changes though, we removed the requirement of the optional (the compiler takes care of ensuring that) and introduced a new error, but our logic doesn't even care what kind of error we get, so can we say that there isn't anything worth testing?<br />
@@ -551,7 +552,7 @@ So let's also fail fast by failing if the <code>onSuccess:</code> closure ever g
 </span><span style="color:#c0c5ce;">   expectation.fulfill()
 })
 </span></pre>
-<p>But if you followed my advice and verified that the test fails when it should you would have noticed it failed because of the time up, not because of the timeout and not because of the <code>XCTFail()</code> even when that lines get hit (go on put a breakpoint and try), that's because there is something <em>not</em> right with <code>XCTestCase</code> so we should use <a href="https://developer.apple.com/documentation/xctest/xctwaiter">XCTWaiter</a> directly, now the final version of the test looks like this:</p>
+<p>But if you followed my advice and verified that the test fails when it should you would have noticed it failed because of the time up, not because of the timeout and not because of the <code>XCTFail()</code> even when that lines get hit (go on put a breakpoint and try), that's because there is something <em>not</em> right<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#9">9</a></sup> with <code>XCTestCase</code> so we should use <a href="https://developer.apple.com/documentation/xctest/xctwaiter">XCTWaiter</a> directly, now the final version of the test looks like this:</p>
 <pre style="background-color:#2b303b;">
 <span style="color:#b48ead;">func </span><span style="color:#bf616a;">testSystemSingleWhenFailsReturnsError</span><span style="color:#c0c5ce;">() </span><span style="color:#b48ead;">throws</span><span style="color:#c0c5ce;"> {
     </span><span style="color:#ebcb8b;">FakeService</span><span style="color:#c0c5ce;">.</span><span style="color:#ebcb8b;">Current</span><span style="color:#c0c5ce;">.failNext = { </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;"> }
@@ -582,9 +583,11 @@ So let's also fail fast by failing if the <code>onSuccess:</code> closure ever g
 <h1 id="conclusion">Conclusion</h1>
 <p>I hope now you start to see the value of RxSwift over a more simple closure based approach, like how easy is to keep the business logic separated from logging and analytics code or the capacity of the operator <a href="https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L157-L170">do</a> to chain actions on our stream of events in one or many places along that is more elegant than nesting closures one inside the other. </p>
 <p>Also as you can see testing RxSwift is not that bad (in this easy example 😉)</p>
-<p>Even something so simple as a <a href="https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single">Single</a> comes with a lot of operators, we will see more on the next post, because before you could get your PR merged the worse will happen, a feature request will in the form of &quot;<em>since you are touching that part of the app, would you mind making a small change for me?</em>&quot;<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#2">2</a></sup> Spoiler alert is not fixing a typo.</p>
+<p>Even something so simple as a <a href="https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single">Single</a> comes with a lot of operators, we will see more on the next post, because before you can get your PR merged the worse will happen, a feature request in the form of &quot;<em>since you are touching that part of the app, would you mind making a small change for me?</em>&quot; will happen shifting priorities and affecting the scope of the entire project<sup><a href="https://julioacarrettoni.github.io/playing-with-rxswift/post-002/#2">2</a></sup>, Spoiler alert is not fixing a typo.</p>
 <p>Yes, that's a cliff hanger.</p>
 <p> <br />
+<strong><a href="/post-003">Next post</a></strong><br />
+ <br />
  </p>
 <table><thead><tr><th></th></tr></thead><tbody>
 </tbody></table>
@@ -596,7 +599,8 @@ So let's also fail fast by failing if the <code>onSuccess:</code> closure ever g
 <a id='5'>5</a>: <a href="https://en.wikiquote.org/wiki/Donald_Knuth">Wikiquote.org</a> Donald Knuth.<br />
 <a id='6'>6</a>: <a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/04-writing_tests.html#//apple_ref/doc/uid/TP40014132-CH4-SW38">Developer.apple.com</a> Writing Test Methods.<br />
 <a id='7'>7</a>: <a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/04-writing_tests.html#//apple_ref/doc/uid/TP40014132-CH4-SW11">Developer.apple.com</a> Writing Tests with Swift.<br />
-<a id='8'>8</a>: <a href="https://developer.apple.com/documentation/xctest/asynchronous_tests_and_expectations/testing_asynchronous_operations_with_expectations">Developer.apple.com</a> Testing Asynchronous Operations with Expectations.  </p>
+<a id='8'>8</a>: <a href="https://developer.apple.com/documentation/xctest/asynchronous_tests_and_expectations/testing_asynchronous_operations_with_expectations">Developer.apple.com</a> Testing Asynchronous Operations with Expectations.<br />
+<a id='9'>9</a>: After digging a little on the matter I found several wrong stuffs with it, luckily <a href="https://twitter.com/SmileyKeith">@SmileyKeith</a> found and reported them some time ago. </p>
 
                             </div>
                         </div>
@@ -610,8 +614,8 @@ So let's also fail fast by failing if the <code>onSuccess:</code> closure ever g
                     Published
                     
 
-<time datetime="2020-03-15">
-    2020-03-15
+<time datetime="2020-04-25">
+    2020-04-25
 </time>
 
 
