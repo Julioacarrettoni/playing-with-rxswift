@@ -82,3 +82,5 @@ Some details on SwiftUI will also be included as it is required to build the UI 
 Anyway, thank you for reading all this impenetrable wall of text, and I hope you enjoy the project, feel free to drop me a comment on twitter.
 
 - [@dev_jac](https://twitter.com/dev_jac)
+
+**[Next post](/post-001)** 

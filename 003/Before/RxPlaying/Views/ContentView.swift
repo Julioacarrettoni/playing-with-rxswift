@@ -4,12 +4,26 @@ import RxSwift
 
 struct ContentView: View {
     @State var globalState: GlobalState? = nil
+    @State var isAutoPolling: Bool = false
+    
     let disposeBag = DisposeBag()
     
     var body: some View {
-        MapView(globalState: self.globalState)
-            .edgesIgnoringSafeArea(.all)
-            .onAppear(perform: self.refreshData)
+        VStack {
+            MapView(globalState: self.globalState)
+            VStack {
+                if !self.isAutoPolling {
+                    Button(action: {
+                        #warning("Missing implementation")
+                    }) { Text("Refresh") }
+                }
+                Toggle(isOn: self.$isAutoPolling, label: { Text("Auto Polling") })
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 16)
+        }
+        .edgesIgnoringSafeArea(.horizontal)
+        .edgesIgnoringSafeArea(.top)
     }
     
     private func refreshData() {

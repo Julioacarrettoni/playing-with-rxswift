@@ -7,7 +7,7 @@ Learn the background story, explore the sample app, and convert our first closur
 Feel free to use this link to skip all the paraphernalia of the post and dive directly into the code.  
 **[Skip intro](#skip_intro)**
 <!-- more -->
-# Background story
+# Background story {#story}
 The key to a good product is a good story, it is true for presentations<sup>[1](#1)</sup>, commercials<sup>[2](#2)</sup> and even apps<sup>[3](#3)</sup>, so here is the one I came up with for this blog:
 
 You recently joined a small mobile team in a medium-sized company, this company is big enough to have processes and a little bureaucracy but not big enough to already have a mobile department. Their technology is a little old, and most engineers are busy maintaining the core products.    
@@ -457,12 +457,17 @@ FakeService.Current.delay = { 0 }
 ```
 Every real world second is 30 seconds worth of recording so things become a little more insteresting and less dull, which is nice to keep re-testing things without diying of boredom.
 
-Anyway, have fun with it, now you can watch the whole hour's worth of content without having to waste a real hour 😉.
+Anyway, have fun with it, now you can watch the whole hour's worth of content without having to waste a real hour 😉.  
+&nbsp;  
+**[Next post](/post-002)**  
+&nbsp;  
+&nbsp;  
 
-
+||
+|-|
 ##### Footnotes
 <a id='1'>1</a>: [Theguardian.com](https://www.theguardian.com/small-business-network/2017/feb/16/master-art-presenting-tell-story-brief-audience) The guardian: "_Master the art of presenting: tell a story, keep it brief_"  
 <a id='2'>2</a>: [Lucidpress.com](https://www.lucidpress.com/blog/how-airbnb-and-apple-use-storytelling-marketing-to-build-their-brands) "_How Airbnb and Apple build their brands with storytelling marketing_"  
 <a id='3'>3</a>: [Enricoangelini.com](https://enricoangelini.com/2011/ios-5-tech-talk-world-tour-in-rome/) look for "_iPhone and iPad User Interface Design_"  
 <a id='4'>4</a>: Yes, that was a joke and that's one of the good ones, so brace yourself.  
-<a id='5'>5</a>: If this story hits close to home, please accept my condolences.
+<a id='5'>5</a>: If this story hits close to home, please accept my condolences.  

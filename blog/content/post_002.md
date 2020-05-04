@@ -1,12 +1,12 @@
 +++
 title = "2. The Single sad path 🐞"
-date = 2020-03-15
+date = 2020-04-25
 +++
 Now that the endpoint is wrapped in a [Single](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single) and works nicely on the "happy path". It's time to start working on handling those error scenarios and add some unit tests to try to catch future bugs before they even happen.
 
 **[Skip intro](#skip_intro)**
 <!-- more -->
-# Background story
+# Background story {#story}
 Thomson Brothers Division might be a medium company with some old technological stack, but that doesn't mean they do things wrong. The company has some modern processes in place to ensure a minimum level of code quality.  
 For example, they do Agile software development<sup>[1](#1)</sup>. Probably someone read a fancy post on LinkedIn selling Agile facilitation consulting and though: "_This looks nice, and I don't need to pay someone to tell me how to run my team. I'll simply follow the first 3 chapters of this book, most of it doesn't apply to us anyway_" <sup>[2](#2)</sup>. And just like that, "_Agile TBD development process_" was born (pun intended).  
 They should have hired the consultant. It would have been cheaper in the long run…  
@@ -98,7 +98,7 @@ We will see soon that this not only fixes the problem but also enables us to do 
 &nbsp;  
 &nbsp;  
 &nbsp;  
-#### Handle errors, recover from errors gracefully
+#### Handle errors, recover from errors gracefully {#pr_req_1}
 
 Let's take a look back at our current implementation of the "reactive" endpoint:
 ```Swift
@@ -238,8 +238,8 @@ Now back to our regular programing...
 
 ||
 |-|
-#### Handle errors, Log errors. {#skip_intermission}
-
+<a id='skip_intermission'></a>
+#### Handle errors, Log errors. {#pr_req_2}
 Let's log some errors on the client, for simplicity our logs will be just printing to the console AKA "poor man's debugger".  
 An straight forward change could be:
 ```Swift
@@ -344,7 +344,7 @@ And with that, we saw how easy it is to add logs to our system while still retai
 
 ||
 |-|
-#### Introduces new unit tests
+#### Introduces new unit tests {#pr_req_3}
 It's time to add some unit tests, the question now is "_What should we test?_" The more tests we write, the better, but writing tests just for the sake of it is not good.  
 Anyway, let's check the changes we introduced and what should we test. I personally like to use the tests to document my assumptions, so if at any time one of those assumptions change the test will warn all of us that something might break, you have the draw the line somewhere though, for example, I'm going to assume that RxSwift is stable and tested enough, so I don't have to verify stuff like a [do](https://github.com/ReactiveX/RxSwift/blob/70b8a33c5c3f4c3b15ebf10b638d2b15cfafb814/RxSwift/Traits/Single.swift#L157-L170) always propagates events down the line.  
 
@@ -483,7 +483,7 @@ So let's also fail fast by failing if the `onSuccess:` closure ever gets hit.
 })
  ```
 
-But if you followed my advice and verified that the test fails when it should you would have noticed it failed because of the time up, not because of the timeout and not because of the `XCTFail()` even when that lines get hit (go on put a breakpoint and try), that's because there is something _not_ right with `XCTestCase` so we should use [XCTWaiter](https://developer.apple.com/documentation/xctest/xctwaiter) directly, now the final version of the test looks like this:
+But if you followed my advice and verified that the test fails when it should you would have noticed it failed because of the time up, not because of the timeout and not because of the `XCTFail()` even when that lines get hit (go on put a breakpoint and try), that's because there is something _not_ right<sup>[9](#9)</sup> with `XCTestCase` so we should use [XCTWaiter](https://developer.apple.com/documentation/xctest/xctwaiter) directly, now the final version of the test looks like this:
 ```Swift
 func testSystemSingleWhenFailsReturnsError() throws {
     FakeService.Current.failNext = { true }
@@ -522,11 +522,12 @@ I hope now you start to see the value of RxSwift over a more simple closure base
  
 Also as you can see testing RxSwift is not that bad (in this easy example 😉)  
 
-Even something so simple as a [Single](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single) comes with a lot of operators, we will see more on the next post, because before you could get your PR merged the worse will happen, a feature request will in the form of "_since you are touching that part of the app, would you mind making a small change for me?_"<sup>[2](#2)</sup> Spoiler alert is not fixing a typo.  
+Even something so simple as a [Single](https://github.com/ReactiveX/RxSwift/blob/master/Documentation/Traits.md#single) comes with a lot of operators, we will see more on the next post, because before you can get your PR merged the worse will happen, a feature request in the form of "_since you are touching that part of the app, would you mind making a small change for me?_" will happen shifting priorities and affecting the scope of the entire project<sup>[2](#2)</sup>, Spoiler alert is not fixing a typo.  
 
 Yes, that's a cliff hanger.
 
-
+&nbsp;  
+**[Next post](/post-003)**  
 &nbsp;  
 &nbsp;  
 
@@ -541,3 +542,4 @@ Yes, that's a cliff hanger.
 <a id='6'>6</a>: [Developer.apple.com](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/04-writing_tests.html#//apple_ref/doc/uid/TP40014132-CH4-SW38) Writing Test Methods.  
 <a id='7'>7</a>: [Developer.apple.com](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/04-writing_tests.html#//apple_ref/doc/uid/TP40014132-CH4-SW11) Writing Tests with Swift.  
 <a id='8'>8</a>: [Developer.apple.com](https://developer.apple.com/documentation/xctest/asynchronous_tests_and_expectations/testing_asynchronous_operations_with_expectations) Testing Asynchronous Operations with Expectations.  
+<a id='9'>9</a>: After digging a little on the matter I found several wrong stuffs with it, luckily [@SmileyKeith](https://twitter.com/SmileyKeith) found and reported them some time ago. 

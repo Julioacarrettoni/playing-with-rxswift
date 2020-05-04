@@ -6,7 +6,7 @@ enum GetSystemStateError: Error {
     case unknown
 }
 
-struct Service {
+enum Service {
     static func overrideNetworkMock() {
         var failures = [false, true]
         FakeService.Current.failNext = {
@@ -28,6 +28,7 @@ struct Service {
             
             return Disposables.create()
         }
+        .retry(3)
         .do(onSuccess: { _ in
             print("[\(#function)] ✅ Success")
         }, onError: { error in
